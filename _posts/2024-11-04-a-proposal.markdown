@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "A Proposal for Safe and Hallucination-free Coding AI"
-date:   2024-10-03 16:30:00 +0000
+date:   2024-11-04 07:30:00 +0000
 categories: AI
 ---
 
