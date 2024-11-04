@@ -691,6 +691,8 @@ Instead I will recommend a few works that influenced my thinking and I think the
 - [Towards Guaranteed Safe AI: A Framework for Ensuring Robust and Reliable AI Systems](https://arxiv.org/abs/2405.06624) 
 - [Clover](https://arxiv.org/abs/2310.17807)
 
+My background is in AI; I am relatively unfamiliar with the Formal Verification literature, but am trying to learn as much as I can. I think with the recent advances of LLMs, there will be many opportunities to combine ideas from AI and formal verification. E.g. tools from formal verification that are useful but thought to be hard to scale up because they sometimes require humans to manually finish the proof: now they can be revisited, to see whether LLMs can help automate the 
+remaining proof tasks.
 
 ### 4.2 On Timing
 
@@ -779,7 +781,8 @@ If they offer a service to automatically turn natural language specification int
 code, demand the formal specification to be provided as well, so that we can make sure that the
 formal specification macthes our goals.
 
-
+Finally, comments and suggestions are welcome. I can be reached at the email in the [About](/about/) page. 
+And please check out [my GitHub](https://github.com/GasStationManager) which contains the repositories mentioned in this essay. 
 
 ---
 # Footnotes
