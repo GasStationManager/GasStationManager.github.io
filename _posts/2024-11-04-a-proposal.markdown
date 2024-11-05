@@ -159,7 +159,7 @@ the cons (`::`) of a head (an `Int`) and a tail (a `List Int`).
 How do we prove the correctness of such a recursive function?
 {% highlight lean %}
 theorem isIn_correct (x:Int) (xs:List Int):
-  isIn x xs = true ↔ x∈ xs := by{
+  isIn x xs = true ↔ x ∈ xs := by{
     induction xs with
     |nil=> simp[isIn]
     |cons h t ih=> simp[isIn,ih]
@@ -169,7 +169,7 @@ The `induction` tactic initiates a proof by induction. It follows the structure 
 the base case (when `xs` is empty) and the inductive case (when `xs` is the cons of `h` and `t`). 
 For the inductive case it also helpfully constructs the induction hypothesis in `ih` for us to use.
 In the Lean environment you will see `ih` among the list of assumptions,
-assigned to the proposition `isIn x t = true ↔ x∈ t`, i.e. the theorem statement applied to `t`.
+assigned to the proposition `isIn x t = true ↔ x ∈ t`, i.e. the theorem statement applied to `t`.
 All that is left for us to do is to plug in the `isIn` definition (which in the case of nonempty list, narrows down to the expression `x==h || isIn x t`),
 and the induction hypothesis `ih`. 
 The `simp` tactic also tries to simpify the goal by applying built-in theorems, and in this case 
@@ -188,20 +188,18 @@ But, it is not too much to require this from the AIs.
 
 ### Objections
 
-Q. what if the AI still tries to include some secret code in the submission, which does not change the return value but does some side effects?
+Q. *what if the AI still tries to include some secret code in the submission, which does not change the return value but does some side effects?*
 
 A. In a functional programming language like Lean, pure functions do not have side effects. Side effects has to be done via monads, and that will be indicated on the function signature. So if you do not want side effects it is easy to enforce that.
 
 
 
-Q. Isn't the restriction to these particular functional languages limiting? 
+Q. *Isn't the restriction to these particular functional languages limiting?*
 
 A. You can have procedural style programming inside a functional language like Lean,
 with the use of monads...
 
-Q. No seriously. 
-What if I have a task that requires direct mutation of computer hardware resources? 
-What about all the Python libraries that I can't live without?
+Q. *No seriously. What if I have a task that requires direct mutation of computer hardware resources? What about all the Python libraries that I can't live without?*
 
 A. This is a starting point. Once we get this working, we can try to extend to procedural languages.
 Proving correctness of code written in procedural languages is 
@@ -210,7 +208,7 @@ To prove some property about some piece of code in Python or C,
 in a proof system like Lean, the first step
 is to build a mathematical model of the language's intepreter (or compiler).
 This allows us to translate the Python/C code into a mathematical statement of what the code does.
-There has been a  research from formal verification on proving correctness of procedural 
+There has been quite a bit of research from formal verification on proving correctness of procedural 
 style code, 
  e.g. Hoare logic, and separation logic.
 
@@ -218,17 +216,17 @@ Another direction is to compile Lean into other languages. Right now the Lean co
 into C.
 
 
-Q. what about guarantees of the program's run time, or other resource usage?
+Q. *What about guarantees of the program's run time, or other resource usage?*
 
 A. Right now, Lean can only reason about the function's return value.
  We will need additional instrumentation to measure resource usage.  At a high level, 
  within Lean this is doable with the use of monads and possibly metaprogramming.
  If we are reasoning across languages as in the previous answer, 
- instrumentation can be introduce during translation. 
+ instrumentation can be introduced during translation. 
  I will expand on this in a future post.
 
 
-Q. What if I am still uncomfortable with executing code I don’t understand? It is not that I have personally read and understood every line of code I have executed, but in this case I would like to be more careful because (a) the code is going to be executed in a more critical domain, and/or (b) the code is written by an AI. 
+Q. *What if I am still uncomfortable with executing code I don’t understand? It is not that I have personally read and understood every line of code I have executed, but in this case I would like to be more careful because (a) the code is going to be executed in a more critical domain, and/or (b) the code is written by an AI.*
 
 A. You can still maintain the policy that only human-understood code is to be executed, for the set of domains you define. Still, the proofs give you an additional layer of verification and protection.
 
@@ -239,30 +237,30 @@ A. You can still maintain the policy that only human-understood code is to be ex
 Suppose you agree that this is a worthy goal. What then?
 
 One answer: *With this safety guardrail in place, it allows us to aim for stronger and stronger coding AIs, and to trust the AI's output as long as the required proof is provided.
-So we do nothing really different for now. People are already trying to make stronger code generating AIs, whether scaling up the current architectures or some different method. People are already making AIs that can formally prove theorems in lean4 (e.g. AlphaProof). Perhaps we can make more investments towards this to make stronger and stronger theorem provers geared towards proving properties of code. Once we reach the point in future when we are faced with the Question, we  "Langchain together" the code generation AI and the theorem proving AI, to produce the code and its proof. We reject the code unless it passes the proof checker.*  
+So we do nothing really different for now. People are already trying to make stronger code generating AIs, whether by scaling up the current architectures or via some different method. People are already making AIs that can formally prove theorems in Lean (e.g. AlphaProof). Perhaps we can make more investments towards this to make stronger and stronger theorem provers geared towards proving properties of code. Once we reach the point in future when we are faced with the Question, we  "LangChain together" the code generation AI and the theorem proving AI, to produce the code and its proof. We reject the code unless it passes the proof checker.*  
 
 But more concretely how do we get there? 
 Let us revisit the second version of the Question, from the current year. I.e. do I trust a large piece of code produced by a current AI?  Recall that the issue is that the current models suffer from hallucinations, and are generally not reliably correct. These mistakes compound as the task become more complex. 
 
-I would argue that 
-the protocol we proposed in Section 2 is also very relevant in addressing the issue of 
-hallucination.
+I would argue that the protocol we proposed in Section 2 is also very relevant in addressing the issue of hallucination.
 First of all, what is hallucination? Different kinds of AI halluciation have been
 identified and studied; some are regarding factual knowledge, here we are mainly
 concerned with ability to reason correctly. 
-Here's a working definition for the code generation domain:
+Here's a working definition of hallucination for the code generation domain:
 1. The AI is making mistakes as if it has the wrong world model (about how code works, and/or how the relevant logic and math works); and
 2. The AI is confident about the answer even though it is wrong.
 
 Now consider an AI that is able to produce code and a machine-checked proof of its correctness. Then the AI is behaving as if it has a good world model of what its code does.
 On the other hand, if the AI produced code but is not able to produce correct reasoning of why their code works, then it is likely that AI doesn't "understand" what the code is doing. 
 
-An AI that is able to produce code and proof solves both versions of the Question.
+**An AI that is able to produce code and proof solves both versions of the Question.**
 It does not hallucinate. It also provides the safety guarantee we need to trust the code.
 
-The next part is a bit speculative but I would argue is very plausible: getting rid of hallucinations will enable the AIs to solve more and more complex tasks by building
+This next part is a bit speculative but I would argue is very plausible: getting rid of hallucinations will enable the AIs to solve more and more complex tasks by building
 on verified components. This will allow the AIs to reach superhuman ability in coding.
-
+(Here by "superhuman" I don't mean the AI necessarily becomes a general superintelligence,
+but in the narrower sense of ability to complete the specific task of code generation given
+human-provided specifications, as measured by accuracy and speed.)
 
 I still haven't said anything about how to achieve it. But this is at least a more 
 concrete goal than just "avoid hallucination".
@@ -350,25 +348,25 @@ which parts  failed
 could provide hints to which part of code to check.
 If we get stuck, an option is to resample another candidate solution from the coder AI.
 
-Additionally,   we can try to prove that the code is incorrect, i.e. prove the negation of the theorem statement.
-A theorem statement for the correctness of function f generally take the form "for all input values x, 
-the return value `f x` satisfy some property `P`".
-So the negation is of the form "there exists some input value x' such that 
-the return value `f x'` violates property `P`".
-So a natural way to prove the negation is to construct such a counterexample.
+Additionally,   we can try to prove that the code is *incorrect*, i.e. prove the negation of the theorem statement. A theorem statement for the correctness of function f generally take the form "for all input values `x`, the return value `f x` satisfy some property `P`".
+So the negation is of the form "there exists some input value `x'` such that 
+the return value `f x'` violates property `P`". So a natural way to prove the negation is to construct such a counterexample.
 In other words,  testing.
 Sometimes the problem description contains a few sample test cases, but they generally
 do not provide sufficient coverage. 
 
 A benefit of having formal specification is that, we can do *property based testing*. 
-That is, generate random input values according to the input types. Then plug into
+That is, generate random input values according to the input types. Then plug them into
 the negation theorem statement and try to prove it. In other words, we do
-not need to know the correct output value. With fixed input value, 
- the proof task becomes much easier, and can often be done automatically (e.g. using Lean's `decide` tactic).
+not need to know the correct output value. With fixed input values, 
+ the proof task becomes much easier, and can often be done automatically (e.g. using Lean's `decide` tactic). For example, for `solveAdd` we can generate random integer input values for `a` and `b`, say 1 and 3, and then try to prove the proposition `Not (1 + (solveAdd 1 3) = 3)`.
+ If our solveAdd implementation was incorrect (e.g. `a-b` instead of `b-a`), this proposition 
+ can be easily proved, establishing the incorrectness of the implementation.
+
  There may be other ways to prove the incorrectness of a function implementation besides testing.
  E.g. if the task is to implement a comparison-sorting algorithm, and the 
  submitted function makes a linear number of comparisons, then we may conclude that the function
- is incorrect because it violates the well-known O(n logn) lower-bound on the number of comparisons
+ is incorrect because it violates the well-known `O(n logn)` lower-bound on the number of comparisons
  required for comparison sorting.
 
 A simple flow that combines these components together would be:
@@ -585,7 +583,7 @@ open-source models.
 
 With this purpose in mind, I would like to set the data license of the site to benefit the open-source community. In particular, that if you train a model using
 the data from this site, and you would like to release/distribute/productize the model,
-you are obligated to at least make the weights of the model freely available (i.e. open-weights model). I am not an expert in data licensing; I am not aware of whether an existing license matches what we need. Perhaps a [Creative Commons](https://en.wikipedia.org/wiki/Creative_Commons_license) license like CC-BY-SA or CC-BY-NC-SA, if the Share-alike (SA) clause also covers models trained on the data. Suggestions are welcome.
+you are obligated to at least make the weights of the model freely available (i.e. open-weights model). I am not an expert in data licensing; I am not aware of whether an existing license matches what we need. Perhaps a [Creative Commons](https://en.wikipedia.org/wiki/Creative_Commons_license) license like CC-BY-SA or CC-BY-NC-SA, if the Share-Alike (SA) clause also covers models trained on the data. Suggestions are welcome.
 
 On the other hand, if you would like to contribute data to the website, and your data is generated base on some existing data source and/or LLM model output, you want to make sure the license
 of the existing data source / LLM model is compatible with you open-sourcing your data this way. 
@@ -650,11 +648,11 @@ theorem solveAdd_correct (a b:Nat) : solveAdd_prop a b (solvdadd a b) :=
 We have now factored out a function `solveAdd_prop` that takes input and output values,
 and returns a proposition that specifies the relationship the input and output values should
 satisfy. In particular `solveAdd_prop` does not refer to the function `solveAdd`, so we do not need to have an implemented solveAdd function.
-Given a test case with input 3, 4 and output 7, we can plug these values into `solveAdd_prop`, and 
+Given a test case with input 3, 7 and output 4, we can plug these values into `solveAdd_prop`, and 
 try to prove 
-`theorem prop_true: solveAdd_prop 3 4 7`
+`theorem prop_true: solveAdd_prop 3 7 4`
 or its negation 
-`theorem prop_false: Not (solveAdd_prop 3 4 7)`.
+`theorem prop_false: Not (solveAdd_prop 3 7 4)`.
 Similar to the property-based testing scenario, these can often be easy to prove, and automated
 methods can be applied.
 
@@ -670,13 +668,13 @@ Will update this article with the repo link.
 If we are able to make good progress on Projects 1, 2 and 3, we will have all the key ingredients
 we need to attempt an AlphaZero training loop. 
 I think we will likely need a couple of additional things:
-1. sufficient compute,
+1. sufficient compute, and
 2. some expertise in deep reinforcement learning. 
  
 I say this as an non-expert in reinforcement learning. If this is your first reinforcement learning project, you might have a hard time. Is it a coincidence that it was again David Silver and DeepMind
 that achieved the AlphaProof result, even though in theory anyone could have applied AlphaZero to the problem of mathematical theorem proving? I think part of it was that they strongly believed in their approach; but another big part of it is that their expertise and experience in reinforcement learning allows them to actually carry it out, overcoming any obstacles that arise on the way.
 
-Nevertheless I believe some in the open source community are well-equipped to attempt this.
+Nevertheless, I believe some in the open source community are well-equipped to attempt this.
 For example an academic lab with some experience in reinforcement learning and access to some compute.
 
 
@@ -766,8 +764,7 @@ can be useful during traning; and we can make use of tools (AI based or otherwis
 in the process of translating requirements into formal specification; 
 but **our protocol works only if we humans understand the formal specification and are able to verify that it matches what we want.**[^5]
 
-I believe
-the safety protocol proposed in Section 2 warrants consideration
+I believe the safety protocol proposed in Section 2 warrants consideration
 independent from the merits of our subsequent proposal of building 
 an AI that will pass the protocol. Specifically:
 - Even if some other approach achieves superhuman performance in coding first,
