@@ -11,7 +11,7 @@ In this essay, I propose a research agenda that I believe will eventually lead t
 
 I am writing this mainly to the open source community. Why? The insights and ideas in my essay might be new to some, and might not to others. In fact, publicly-available information has led me to believe that at least some of the commercial labs are actively working on similar ideas/directions.  One message that I hope to convince you in this essay is that, whoever ends up achieving this, it will be a Big Deal. And right now, most likely it will be the frontier labs, because they have the most resources, including compute. And when they do, it is unlikely that they will open source it. The open source community will be playing catch up then, and it will be hard to catch up this time, because such a superhuman-level coding AI will be able to recursively self-improve in an accelerating manner. I realized that, even though it is tempting to continue working on this by myself, I, an independent researcher with limited time and compute, will simply not be fast enough.
 
-By publishing this essay, and open-sourcing what I have done so far, I am calling on the open source community to start thinking about these ideas, if you haven't already. If you are already working in this direction, it may be beneficial to coordinate resources. Even then, we will be playing catch up. But hopefully it will be a more level playing field.
+By publishing this essay, and [open-sourcing what I have done so far](https://github.com/GasStationManager), I am calling on the open source community to start thinking about these ideas, if you haven't already. If you are already working in this direction, it may be beneficial to coordinate resources. Even then, we will be playing catch up. But hopefully it will be a more level playing field.
 
 Why do I want to help the open source community? I do subscribe to the stance that a single company (no matter which one) having all the power in the world is perhaps undesirable. 
 Furthermore, as the title suggests, what I'm proposing below has an important AI Safety component. Indeed, if we are going to be able to produce coding AIs with superhuman ability, AI Safety has to be taken seriously. And for that to work requires buy-in from everyone. I want the open source community to have a seat at the table for that discussion. 
@@ -69,7 +69,7 @@ Indeed, the issue of halluciation appears to be the main obstacle currently prev
 solve larger-scale coding tasks. These more complex tasks typically require solving a sequence of subtasks; and hallucination in an earlier task will quickly lead the AI astray; the mistakes compound and it is hard to recover.
 
 This is of course an active area of research. The most promising current approaches focus on scaling up 
-inference-time compute (a.k.a. "system 2", reasoning), either via some external scaffolding or by training the behavior
+inference-time compute (a.k.a. "System 2", reasoning), either via some external scaffolding or by training the behavior
 into the model via reinforcement learning. 
 The intuition is that by spending more tokens to think, the AI can produe a better quality output.
 The extra tokens are used to reason step by step (chain-of-thought), to check over the output for mistakes (reflection), and/or to systematically examine candidate options (search, tree-of-thought).
@@ -86,11 +86,11 @@ We will come back to the second version a bit later.
 Here is an attempt to answer the Question: *Let us ask the AI to prove a theorem about the correctness of its code.* 
 But the proof could be also very long and hard to understand.
 
-*Revised attempt: I know! I've just read about AlphaProof, which was able to produce 
+*Revised attempt: I know! I've just read about [AlphaProof](https://deepmind.google/discover/blog/ai-solves-imo-problems-at-silver-medal-level/), which was able to produce 
 rigorous, machine-checkable proofs of mathematical statements in the language Lean; solving highly-nontrivial International Math Olympiad problems at a silver-medal level. So, let's ask the AI to provide a machine-checkable proof of correctness of its code, written in a formal language like Lean. If the proof passed the proof checker, we know it is correct.*
 
 But how do we trust that the theorem proved matches what the code is doing?
-E.g. suppose we asked the AI to write a Python program that computes shortest path in a graph,
+E.g., suppose we asked the AI to write a Python program that computes shortest path in a graph,
 and the AI returns a Python implementation of Dijkstra's algorithm, with a proof in
 Lean that Dijkstra's Algorithm correctly computes the shortest path. How do we know that the AI's Python code is a faithful implementation the Dijkstra's algorithm, without checking it line by line?
 
@@ -99,7 +99,7 @@ A key observation: some of these proof systems (Lean, Coq, Isabell, Idris etc) a
 
 So: ask AI to write the function in (say) Lean, and also write the proof of correctness of the submitted function in Lean. 
 Specifically, we provide:
-1. a function signature to be implemented
+1. a function signature to be implemented, and
 2. the formal specification of what the function should satisfy, as a theorem statement
 that references the function by name.
 
@@ -281,10 +281,10 @@ feedback from the proof system can be a strong grounding signal to help the AI l
 3. Combining Search and Learning. This access to the ground truth allows us to be confident that search produces improved results than the base model's output.
 We train our model to imitate the output of the search; then use the improved model to 
 guide the search toward better solutions. Repeat the feedback loop.
-This is basically the AlphaZero algorithm.
+This is basically the [AlphaZero](https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/alphazero-shedding-new-light-on-chess-shogi-and-go/alphazero_preprint.pdf) algorithm.
 
 The AlphaZero algorithm, from its earlier success in games like Go, chess, shogi,  and starcraft,
-to powering AlphaProof's recent breakthrough in mathematical problem solving, 
+to powering [AlphaProof's recent breakthrough in mathematical problem solving](https://deepmind.google/discover/blog/ai-solves-imo-problems-at-silver-medal-level/), 
 has shown us a reliable recipe to get to superhuman performance in reasoning-heavy domains. 
 A key ingredient in these other successes was that the domain has a source of ground truth.
 I believe that by formulating the code generation task as a code-and-proof problem,
@@ -660,6 +660,10 @@ If the `solveAdd_prop` passes all the test cases, we have a relatively high conf
 it faithfully captures the original problem description, and can attach the problem description
 with the formal specification together as training data.
 Furthermore, the pass/fail results can be used as ground truth to train better translation models.
+
+For datasets of problems without test cases, if the dataset also comes with correct code solutions in some language
+(e.g. Python), we can use the solution code together with randomly generated input values (as in property-based testing)
+to generate the expected output values, which forms the test cases we need for the above approach.
 
 I will open source a simple proof-of-concept script of this process in a few days.
 Will update this article with the repo link.
