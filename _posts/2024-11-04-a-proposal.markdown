@@ -23,7 +23,7 @@ of code generation, and will not further belabor the point.
 
 The following is a common workflow. 
 Some version of this is already happening with current AI coding assistants,
-from plain chat interfaces like ChatGPT and Claude Sonnet to integrated tools like Github Copilot, and Cursor.
+from plain chat interfaces like ChatGPT and Claude Sonnet to integrated tools like Github Copilot, Aider, and Cursor.
 1. We provide a description of the task. 
 2. The AI returns code and explanation. 
 3. Rounds of feedback/questions/revisions/sandbox testing as needed, 
@@ -91,8 +91,8 @@ rigorous, machine-checkable proofs of mathematical statements in the language Le
 
 But how do we trust that the theorem proved matches what the code is doing?
 E.g., suppose we asked the AI to write a Python program that computes shortest path in a graph,
-and the AI returns a Python implementation of Dijkstra's algorithm, with a proof in
-Lean that Dijkstra's Algorithm correctly computes the shortest path. How do we know that the AI's Python code is a faithful implementation the Dijkstra's algorithm, without checking it line by line?
+and the AI returns a Python implementation of [Dijkstra's algorithm](https://en.wikipedia.org/wiki/Dijkstra's_algorithm), with a proof in
+Lean that Dijkstra's Algorithm correctly computes the shortest path. How do we know that the AI's Python code is a faithful implementation of Dijkstra's algorithm, without checking it line by line?
 
 
 A key observation: some of these proof systems (Lean, Coq, Isabell, Idris etc) are also general-purpose (functional) programming languages.
@@ -366,8 +366,7 @@ not need to know the correct output value. With fixed input values,
  There may be other ways to prove the incorrectness of a function implementation besides testing.
  E.g. if the task is to implement a comparison-sorting algorithm, and the 
  submitted function makes a linear number of comparisons, then we may conclude that the function
- is incorrect because it violates the well-known `O(n logn)` lower-bound on the number of comparisons
- required for comparison sorting.
+ is incorrect because it violates the well-known `O(n logn)` lower-bound on [the number of comparisons required for comparison sorting](https://en.wikipedia.org/wiki/Comparison_sort#Number_of_comparisons_required_to_sort_a_list).
 
 A simple flow that combines these components together would be:
 after the coder outputs the function implementation, it is passed to 
