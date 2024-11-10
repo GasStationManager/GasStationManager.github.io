@@ -5,6 +5,12 @@ date:   2024-11-04 07:30:00 +0000
 categories: AI
 ---
 
+**Update 11/10:** Added GitHub Repo [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest) for Project 3.
+
+**Quick Links to GitHub Repos:** [Arena](https://github.com/GasStationManager/CodeProofTheArena) / [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark) / [Formalize](https://github.com/GasStationManager/FormalizeWithTest)
+
+---
+
 # Preface
 
 In this essay, I propose a research agenda that I believe will eventually lead to coding AIs that have superhuman-level ability, are hallucination-free, and safe. To achieve our goal will require a lot of further innovation, experimentation, and hard work. But I fully believe this is the most promising direction.
@@ -664,8 +670,7 @@ For datasets of problems without test cases, if the dataset also comes with corr
 (e.g. Python), we can use the solution code together with randomly generated input values (as in property-based testing)
 to generate the expected output values, which forms the test cases we need for the above approach.
 
-I will open source a simple proof-of-concept script of this process in a few days.
-Will update this article with the repo link.
+I am open-sourcing [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest), a simple proof-of-concept of this process.
 
 ### Project 4. AlphaZero
 If we are able to make good progress on Projects 1, 2 and 3, we will have all the key ingredients
