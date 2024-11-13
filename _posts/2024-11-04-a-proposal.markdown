@@ -593,7 +593,7 @@ you are obligated to at least make the weights of the model freely available (i.
 On the other hand, if you would like to contribute data to the website, and your data is generated base on some existing data source and/or LLM model output, you want to make sure the license
 of the existing data source / LLM model is compatible with you open-sourcing your data this way. 
 
-The GitHub repository contains the source code but the website is not yet officially hosted anywhere. My hope is for someone from the open source community to fork the repo and host the website. Whoever hosts the website can decide on the data license for the site (and be prepared to enforce it). Given the license, people can decide whether to contribute data to the site.
+The GitHub repository contains the source code but the website is not yet officially hosted anywhere. *(Update 11/13: A [Demo site](http://5.78.72.236:8000) is up.)* My hope is for someone from the open source community to fork the repo and host the website. Whoever hosts the website can decide on the data license for the site (and be prepared to enforce it). Given the license, people can decide whether to contribute data to the site.
 
 ### Code with Proofs Benchmark
 
