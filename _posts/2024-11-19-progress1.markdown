@@ -5,7 +5,7 @@ date:   2024-11-19 07:30:00 +0000
 categories: AI
 ---
 
-It's been a couple of weeks since I posted my essay [A Proposal for Safe and Hallucination-free Coding AI](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html). Since then I have been writing quite a bit of code. I wanted to give a quick progress report on what's new, and what's upcoming.
+It's been a couple of weeks since I posted my essay [A Proposal for Safe and Hallucination-free Coding AI](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html). Since then I have been writing quite a bit of code. I wanted to give a quick progress report on what's new, and what's upcoming. (You might want to read the [previous essay](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html) if you haven't, or the following won't make much sense.)
 
 # Arena
 
