@@ -1,0 +1,43 @@
+---
+layout: post
+title:  "Progress Report #1: Arena, SafeVerify and More"
+date:   2024-11-19 07:30:00 +0000
+categories: AI
+---
+
+It's been a couple of weeks since I posted my essay [A Proposal for Safe and Hallucination-free Coding AI](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html). Since then I have been writing quite a bit of code. I wanted to give a quick progress report on what's new, and what's upcoming.
+
+# Arena
+
+This is the project that has been gaining the most traction. Recall that [Code with Proofs: the Arena](https://github.com/GasStationManager/CodeProofTheArena) is a web site 
+for posting coding challenges with formal specifications in Lean, and for submitting solutions (code with proof) that are judged using the Lean proof checker. The goal is to serve as a platform for crowdsourcing and sharing data, to help train coding AIs.
+
+We now have a demo site up at [http://www.codeproofarena.com:8000/](http://www.codeproofarena.com:8000/). It's gotten some interest and lively discussion at [Lean Zulip Chat](https://leanprover.zulipchat.com/), the main discussion forum for the Lean community. Some users have submitted solutions and new challenges to the demo site. Also gotten some very helful feedback from the Lean experts there, which leads us to:
+
+# SafeVerify
+
+The current system had some rudimentary checks to make sure the submission indeed satisfies the 
+formal specification of the challenge. E.g. user could submit a proof with the `sorry` placeholder in the body, and the lean proof checker will go through, but emit a warning abou the `sorry`. This is caught by the system, which then judges the submission as incorrect.
+
+Our Lean experts quickly pointed out ways the system can be circumvented, as evidenced by certain submissions to the demo site. Lean has powerful metaprogramming capabilities, which allows users to e.g. create their own tactics that helps them prove stuff in the domains of their interest.
+In our case it also allows one to: 
+- redefine syntax so that e.g. `theorem` means something totally different, perhaps no longer requiring a proof, or
+- add new axioms or replace existing standard axioms, so that `False` can be proven, from which anything can be trivially proven.
+
+`Experts` was an understatement, they are the people developing the Lean language and libraries, so know all the tricks. They also suggested solutions to make the check more robust. Coincidentally, Vadim Fomin recently announced on Zulip a new project [TheoremMarketplace](https://github.com/wadimiusz/lean-contract-interact), a blockchain smart contract for theorem bounties, that is also in need of robust proof checking. 
+We decide to factor out the proof checking component into a separate project and collaborate. 
+[SafeVerify](https://github.com/GasStationManager/SafeVerify) is a work-in-progress prototype. 
+
+Taking a broader view, this stress testing and hardening of the proof verification component is actually extremely important. Recall that the ultimate goal of our [project](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html) is to create coding AIs that can produce code and its correctness proof. And the safety of the code is guaranteed by automated checking of the proof by Lean. So having a proof checking component that is robust against jailbreaking is a foundational component of the whole endeavor. I underestimated the importance of this earlier because I didn't have a deep understanding of Lean, but I am totally glad that the Arena project has led me to work on this.
+
+Also made me realize that beyond the projects proposed in my essay, there may be need for some additional utilities that would be one layer below on the software stack, that might be smaller but provide useful features and conveniences. So expect to see more of that in future progress reports.
+
+# Coming Soon
+
+Here's a sneak peek of stuff I've been working on but not released yet. 
+- In the essay I promised a post that expands on my preference towards the style of integrating coding and proving, AKA programming with dependent types. That is coming. It has to do with a topic most feared by the folks preparing for coding interviews on Leetcode...
+- [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest) contains some initial code that implements the idea regarding autoformalization from Projet 3 of the essay.
+I think this is a very promising direction, but will need some further engineering to reach its full potential. More to come.
+- I am doing some experimentation with Project 1, search / inference time compute. Similary to the previous bullet, this will need some further building out the components. I hope to make an initial release soon. 
+
+As always, comments, suggestions, collaborations welcome!
