@@ -24,9 +24,10 @@ In our case it also allows one to:
 - redefine syntax so that e.g. `theorem` means something totally different, perhaps no longer requiring a proof, or
 - add new axioms or replace existing standard axioms, so that `False` can be proven, from which anything can be trivially proven.
 
-`Experts` was an understatement, they are the people developing the Lean language and libraries, so know all the tricks. They also suggested solutions to make the check more robust. Coincidentally, Vadim Fomin recently announced on Zulip a new project [TheoremMarketplace](https://github.com/wadimiusz/lean-contract-interact), a blockchain smart contract for theorem bounties, that is also in need of robust proof checking. 
+"Experts" was an understatement, they are the people developing the Lean language and libraries, so know all the tricks. They also suggested solutions to make the check more robust. Coincidentally, Vadim Fomin recently announced on Zulip a new project [TheoremMarketplace](https://github.com/wadimiusz/lean-contract-interact), a blockchain smart contract for theorem bounties, that is also in need of robust proof checking. 
 We decide to factor out the proof checking component into a separate project and collaborate. 
-[SafeVerify](https://github.com/GasStationManager/SafeVerify) is a work-in-progress prototype. 
+
+[SafeVerify](https://github.com/GasStationManager/SafeVerify) is a work-in-progress prototype, based on these suggestions and code from [lean4checker](https://github.com/leanprover/lean4checker/).  
 
 Taking a broader view, this stress testing and hardening of the proof verification component is actually extremely important. Recall that the ultimate goal of our [project](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html) is to create coding AIs that can produce code and its correctness proof. And the safety of the code is guaranteed by automated checking of the proof by Lean. So having a proof checking component that is robust against jailbreaking is a foundational component of the whole endeavor. I underestimated the importance of this earlier because I didn't have a deep understanding of Lean, but I am totally glad that the Arena project has led me to work on this.
 
@@ -38,6 +39,6 @@ Here's a sneak peek of stuff I've been working on but not released yet.
 - In the essay I promised a post that expands on my preference towards the style of integrating coding and proving, AKA programming with dependent types. That is coming. It has to do with a topic most feared by the folks preparing for coding interviews on Leetcode...
 - [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest) contains some initial code that implements the idea regarding autoformalization from Projet 3 of the essay.
 I think this is a very promising direction, but will need some further engineering to reach its full potential. More to come.
-- I am doing some experimentation with Project 1, search / inference time compute. Similary to the previous bullet, this will need some further building out the components. I hope to make an initial release soon. 
+- I am doing some experimentation with Project 1, search / inference time compute. Similary to the previous bullet, this will need some further building out of the components. I hope to make an initial release soon. 
 
 As always, comments, suggestions, collaborations welcome!

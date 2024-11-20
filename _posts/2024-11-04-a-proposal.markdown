@@ -5,6 +5,8 @@ date:   2024-11-04 07:30:00 +0000
 categories: AI
 ---
 
+**Update 11/19:** First [progress report](https://gasstationmanager.github.io/ai/2024/11/19/progress1.html).
+
 **Update 11/10:** Added GitHub Repo [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest) for Project 3.
 
 **Quick Links to GitHub Repos:** [Arena](https://github.com/GasStationManager/CodeProofTheArena) / [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark) / [Formalize](https://github.com/GasStationManager/FormalizeWithTest)
