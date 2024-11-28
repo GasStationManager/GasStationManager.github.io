@@ -648,9 +648,9 @@ theorem statement, here we do not yet have an implemented function but the input
 Consider our earlier example with `solveAdd`. Let us rewrite the theorem statement 
 into the following logically equivalent formulation:
 {% highlight lean%}
-def solveAdd_prop(inp_a inp_b output : Nat):= inp_a + output = inp_b
+def solveAdd_prop(inp_a inp_b output : Int):= inp_a + output = inp_b
 
-theorem solveAdd_correct (a b:Nat) : solveAdd_prop a b (solvdadd a b) :=
+theorem solveAdd_correct (a b: Int) : solveAdd_prop a b (solvdadd a b) :=
 {% endhighlight %}
 We have now factored out a function `solveAdd_prop` that takes input and output values,
 and returns a proposition that specifies the relationship the input and output values should
