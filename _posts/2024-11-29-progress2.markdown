@@ -1,0 +1,48 @@
+---
+layout: post
+title:  "Progress Report #2: FormalizeWithTest, LeanTool"
+date:   2024-11-29 07:30:00 +0000
+categories: AI
+---
+
+# FormalizeWithTest
+
+Lots of updates for our autoformalization sub-project, with the first set of preliminary results posted on [GitHub](https://github.com/GasStationManager/FormalizeWithTest).
+
+First a brief recap. As part of my push for [creating coding AIs able to prove the correctness of its own code](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html),
+I have been working on autoformalization of coding problem datasets, i.e. translating problem descriptions into formal specifications in Lean.
+
+A major challenge of autoformalization efforts is the evaluation of the quality of the translations in a scalable manner.
+In Section 3 Project 3 of the essay linked above, I proposed an approach for autoformalization of coding problems, especially if the dataset comes with test cases for each problem. In short, we can repurpose these test cases to serve as checks on the fidelity of the translations. If the translation is faithful, the formal specification and the test cases should be compatible, and this check can be automated.
+
+See [here](https://github.com/GasStationManager/FormalizeWithTest) for details and preliminary results on my proof of concept. To summarize, with a sample of 30 problems (taken from the `code_contests` data set), I used Claude Sonnet to translate them into formal specifications in Lean, resulting in 17 specifications without syntax errors. My verification procedure was able to prove that 10 of these are compatible with their test cases.
+(I will post these formalized problems to our Arena demo server. Will update this post with the link.)
+
+I think we can already scale this up to produce autoformalized data sets of a pretty good size.
+
+Besides being used as a filter in a autoformalization pipeline, the pass/fail results can be used as ground truth to train better translation models.
+
+# LeanTool
+
+In my initial implementation, after prompting the LLM to do the translation, the LLMs often produced code that contained syntax errors. 
+
+I made a simple utility [LeanTool](https://github.com/GasStationManager/LeanTool)
+ that equips LLMs with a "Code Interpreter" for Lean. It uses the LiteLLM library to connect to LLMs, so you can plug in any compatible LLM, from OpenAI and Anthropic APIs to local LLMs hosted via ollama or vLLM. 
+
+With this utility, we are able to run the LLM's code in Lean to check for syntax errors, and provide feedback to allow the LLM to fix the error. 
+
+It is a very simple python script. I am making it a separate repository because it will be a common component for my projects, but also potentially useful for others. There are a few existing works on connecting LLMs with Lean; some are more geared towards helping users in an IDE like VS Code, e.g. Lean Copilot and LLMLean. The design goal of LeanTool is to be flexible: easy to plug into an automated pipeline/agent framework, at the same time also easy to integrate into a chat interface.
+
+
+
+# Open Problems
+
+- Extend LeanTool to Lean interfaces that permit more complext interaction with Lean, such as
+Lean REPL, or the more recent [Pantograph](https://github.com/lenianiva/PyPantograph)
+
+- Another component in our FormalizeWithTest pipeline is the automated proving of 
+test cases. Right now I'm using a kitchen-sink heuristic approach: just try all the tactics I know. 
+Yet to explore some of the automated proving tools like `lean-auto` and `duper`.
+An automated prover will be another common compoenent, useful in e.g. 
+a property-based testing module as mentioned in [my essay](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html), or more general proof generation strategies, including Draft-Sketch-Prove.
+
