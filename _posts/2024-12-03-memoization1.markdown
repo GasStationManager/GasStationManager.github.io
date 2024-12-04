@@ -5,18 +5,6 @@ date:   2024-12-3 07:30:00 +0000
 categories: AI
 ---
 
-```lean
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Fintype.Prod
-import Batteries.Data.HashMap
-open Batteries
-```
-
-# Proving Generic Memoization in Lean, and Teaching It to Sonnet
-
-Lately I have been practicing coding and
-proving in Lean. Doing the following exercise has influenced how I think about programming in Lean.
-
 Consider memoization. This is a very general algorithmic technique:
 given a recursive function, we use a map-like data structure
 to cache its return values so that later calls can directly
@@ -33,8 +21,15 @@ We would like this to be easily adapted to other
 recursive functions, or switched to use other data structures,
 with minimal rewriting efforts.
 
-Another part of my motivation for looking at this is from
+Part of my motivation for this exercise is from
 my interest in [building coding AIs that are able to prove correctness of their own code](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html). Dynamic programming has the reputation of being on the harder side of algorithmic techniques to master. In my previous life teaching algorithms to undergrads, I used to introduce memoization as a simple way to do dynamic programming. Now, if the correctness proof of memoization can also be done in a simple, modular manner, perhaps this can be taught to the AIs.
+
+```lean
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Prod
+import Batteries.Data.HashMap
+open Batteries
+```
 
 ## Fibonacci
 
