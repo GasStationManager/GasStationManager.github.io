@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Proving Generic Memoization in Lean, and Teaching It to Sonnet (Part 1)"
+title:  "Proving Memoization in Lean, and Teaching It to Sonnet (Part 1)"
 date:   2024-12-3 07:30:00 +0000
 categories: AI
 ---
@@ -344,5 +344,9 @@ of LLM produced code.
 - This is Part 1 of a series of posts, both exploring
 proof techniques in Lean and LLMs' ability to learn these technqieus. Upcoming topics include: proving performance guarantees for memoization. Bottom-up dynamic programming.
 And perhaps other algorithmic techniques like divide-and-conquer.
+- In the context of our [overall program](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html), this effort is an initial exploration of ideas I mentioned in Project 1 part 3.
+In my opinion, programming with dependent types is a suitable style for LLMs to adopt; not just because of nice examples in this post where a simple, pretty proof falls out,
+but also because when we are coding, we are often implicitly doing a proof sketch. 
+This style just makes the proof sketch explicit and rigorous. 
 
 
