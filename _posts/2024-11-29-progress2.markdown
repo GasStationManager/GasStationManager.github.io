@@ -16,7 +16,7 @@ A major challenge of autoformalization efforts is the evaluation of the quality 
 In Section 3 Project 3 of the essay linked above, I proposed an approach for autoformalization of coding problems, especially if the dataset comes with test cases for each problem. In short, we can repurpose these test cases to serve as checks on the fidelity of the translations. If the translation is faithful, the formal specification and the test cases should be compatible, and this check can be automated.
 
 See [here](https://github.com/GasStationManager/FormalizeWithTest) for details and preliminary results on my proof of concept. To summarize, with a sample of 30 problems (taken from the `code_contests` data set), I used Claude Sonnet to translate them into formal specifications in Lean, resulting in 17 specifications without syntax errors. My verification procedure was able to prove that 10 of these are compatible with their test cases.
-(I will post these formalized problems to our Arena demo server. Will update this post with the link.)
+(**Update 12/3:** I have imported these autoformalized problems to [Code with Proofs: the Arena](http://www.codeproofarena.com:8000/challenges) demo site. They go from challenge 38 "beautifleTable" to challenge 47 "dice_game". Try it out!)
 
 I think we can already scale this up to produce autoformalized data sets of a pretty good size.
 
