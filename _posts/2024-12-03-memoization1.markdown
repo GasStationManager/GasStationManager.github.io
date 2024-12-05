@@ -122,7 +122,7 @@ This coupling between the two subtasks complicates our proof, forcing us to jugg
 Eventually it clicked for me: the easiest way to prove this is in the style of programming with dependent types: attach logical properties to our data by subtyping.
 First a brief introduction to subtyping in Lean:
 given a type like `Nat`, you can create a subtype by
-specifying a property that the members of the subtype mush satisfy, e.g. `{x:Nat // x > 0}` for positive natural numbers. Subtyping a function's return type effectively specifies the postcondition for the function. We can also subtype data structures to specify invanrances.
+specifying a property that the members of the subtype mush satisfy, e.g. `{x:Nat // x > 0}` for positive natural numbers. Subtyping a function's return type effectively specifies the postcondition for the function. We can also subtype data structures to specify invariances.
 And we can prove the resulting proof obligations inside the function definition, resulting in a style that interleaves code and proof.
 
 In our case, to prove property 2 above, all we need is to provide a version of `find?` such that `find? y` returns
@@ -350,3 +350,6 @@ but also because when we are coding, we are often implicitly doing a proof sketc
 This style just makes the proof sketch explicit and rigorous. 
 
 
+---
+
+Generated with [mdgen](https://github.com/Seasawher/mdgen)
