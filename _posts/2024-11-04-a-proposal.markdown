@@ -13,7 +13,7 @@ categories: AI
 
 **Update 11/10:** Added GitHub Repo [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest) for Project 3.
 
-**Quick Links to GitHub Repos:** [Arena](https://github.com/GasStationManager/CodeProofTheArena) / [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark) / [Formalize](https://github.com/GasStationManager/FormalizeWithTest)
+**Quick Links to GitHub Repos:** [Arena](https://github.com/GasStationManager/CodeProofTheArena) / [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark) / [Formalize](https://github.com/GasStationManager/FormalizeWithTest) / [LeanTool] (https://github.com/GasStationManager/LeanTool)
 
 ---
 
