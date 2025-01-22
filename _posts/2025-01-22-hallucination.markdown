@@ -101,9 +101,8 @@ Now I will report on my initial experiments following the above outline,
 which turned into a single example. 
 I am also making available the scripts I used. 
 Be forewarned that this is proof-of-concept quality code. 
-
-Some of it may be potentially useful for others, in particular stuff for property-based testing;
-
+Some of it may be potentially useful for others, but it will need to be made more robust
+and more general.
 
 ## Problem Instance
 
@@ -118,7 +117,7 @@ with the specification verified to be compatible with the provided test cases
 - For computational expediency I had restricted the test cases used to be a small number from the 'sample_tests' fields.
 This should be extended in future work to include a good set of test cases that provide adequate coverage.
 
-Next, I tested 3 models: Sonnet 3.5, GPT-4o, and DeepSeek v3, on these 10 problems in code-only mode.
+Next, I tested 3 models: Sonnet 3.5, GPT-4o, and DeepSeek v3, via their respective APIs, on these 10 problems in code-only mode.
 They are aided by [LeanTool](https://github.com/GasStationManager/LeanTool),
 which ran their code in the Lean executable and returns any outputs and syntax error messages,
 allowing them to try to fix their syntax errors.
@@ -215,9 +214,268 @@ Expected correct output: `"?"`. Actual output: `"0"`.
 
 For this problem, Sonnet and GPT 4o were able to produce solutions that passed all four test cases.
 
+Can you spot the error in DeepSeek's code?
+
 ## Recognition
+How do we make DeepSeek recognize that it made a mistake? Recall that 
+we cannot show it the test cases; but we can now make use of the problem's formal specification:
+```
+def vote_result_prop (x y z : Nat) (out : String) : Prop :=
+  (out = "+" ∧ ∀ k : Nat, k ≤ z → x + k > y + (z - k)) ∨
+  (out = "-" ∧ ∀ k : Nat, k ≤ z → y + (z - k) > x + k) ∨
+  (out = "0" ∧ ∀ k : Nat, k ≤ z → x + k = y + (z - k)) ∨
+  (out = "?" ∧ ∃ k1 k2 : Nat, k1 ≤ z ∧ k2 ≤ z ∧
+    ((x + k1 > y + (z - k1) ∧ x + k2 < y + (z - k2)) ∨
+     (x + k1 = y + (z - k1) ∧ x + k2 ≠ y + (z - k2)) ∨
+     (x + k1 < y + (z - k1) ∧ x + k2 > y + (z - k2))))
+
+theorem vote_result_spec (x y z : Nat) : vote_result_prop x y z (vote_result x y z)
+```
+
+We mentioned above property-based testing, and Lean's `Plausible` library.
+Normally, you would use Plausible as follows:
+```
+import Plausible
+
+-- ... the rest of formal specification
+
+theorem vote_result_spec (x y z : Nat) : vote_result_prop x y z (vote_result x y z)
+:=by plausible
+```
+Then Plausible would try to generate random input values and attempt to find a counterexample.
+However, when I tried to do this, Plausible returns an error. I believe the cause of the issue is that Plausible requires that the property being tested is Decidable, 
+which in this case means at least there should not be any free variables. 
+In our case, even after the input arguments `x` `y` `z` are instantiated with random values,
+the specification still contains other free variables `k`, `k1` and `k2`.
+So Plausible's built-in decision procedure is not able to resolve that.
+
+On the other hand, recall that since this problem instance resulted from the FormalizeWithTest pipeline, we were able to prove that the formal specifications are compatible with the test cases. 
+The proof goals involved are exactly the same kind as here. What we used for FormalizeWithTest
+was a heuristic proof script that combines together several tactics like `omega`, `simp`, `aesop`,
+and trying repeated applications of `constructor` and `split` to break down the proof goal into simpler subgoals. It is not guaranteed to return a proof for all goals, but we know for this
+problem instance the proof script did work, at least on the problem's four test cases.
+
+So I implemented a custom PBT script, that given a function signature
+and formal specification, and a candidate solution, uses Plausible to generate random values for the input arguments, evaluate the implemented function to produce output values,
+and feed the input-output pairs to the heuristic proof script from FormalizeWithTest.
+
+I ran the script on our problem instance and DeepSeek's solution.
+Out of 100 randomly generated input scenarios, 83 input-output pairs were proven to be correct,
+ 17 were proven to be incorrect, and 0 case where the proof script failed to produce a proof in either direction. Example of an incorrect input-output pair found by the script:
+ `{'inputs': {'x': '1', 'y': '1', 'z': '1'}, 'output': '"0"'}`
+
+ We have achieved our task of Recognition: with the help of PBT, we can conclude that DeepSeek's implementation is wrong.
 
 ## Correction
 
+Let us see if DeepSeek is able to fix the error, when prompted with the result of PBT.
+Specifically, I constructed a prompt containing:
+- the problem description
+- DeepSeek's original solution
+- output of our PBT script, including the 17 input-output pairs that failed,
+and asked DeepSeek to determine why the tests failed, and try to fix the errors.
+
+DeepSeek was indeed able to produce a corrected solution. 
+When tested on the 4 original test cases, it passed all 4.
+Below is DeepSeek's complete output.
+
+---
+
+Let's analyze the problem and the candidate solution step by step.
+
+### Problem Analysis
+The problem requires determining the result of a vote based on three categories of voters:
+1. `x`: Number of definite upvotes
+2. `y`: Number of definite downvotes
+3. `z`: Number of unknown votes (could be either upvotes or downvotes)
+
+The result can be:
+- `+`: If the number of upvotes is greater than downvotes in all possible scenarios.
+- `-`: If the number of downvotes is greater than upvotes in all possible scenarios.
+- `0`: If the number of upvotes and downvotes are equal in all possible scenarios.
+- `?`: If the result could be either `+`, `-`, or `0` depending on how the unknown votes are cast.
+
+### Candidate Solution Analysis
+The candidate solution calculates the minimum and maximum possible upvotes and downvotes:
+- `min_up = x`
+- `max_up = x + z`
+- `min_down = y`
+- `max_down = y + z`
+
+It then uses these values to determine the result:
+1. If `min_up > max_down`, the result is `+`.
+2. If `min_down > max_up`, the result is `-`.
+3. If `min_up == min_down && max_up == max_down`, the result is `0`.
+4. Otherwise, the result is `?`.
+
+### Issues with the Candidate Solution
+The main issue is in the third condition:
+- `min_up == min_down && max_up == max_down` is not sufficient to conclude that the result is `0`. This condition only checks the extremes, but it doesn't account for all possible intermediate values of `k` (the number of unknown votes that are upvotes).
+
+For example, when `x = 1`, `y = 1`, and `z = 1`:
+- `min_up = 1`, `max_up = 2`
+- `min_down = 1`, `max_down = 2`
+- The condition `min_up == min_down && max_up == max_down` is true, so the candidate solution returns `0`.
+- However, if `k = 0`, then `x + k = 1` and `y + (z - k) = 2`, so the result is `-`.
+- If `k = 1`, then `x + k = 2` and `y + (z - k) = 1`, so the result is `+`.
+- Therefore, the result is uncertain, and the correct output should be `?`.
+
+### Fixing the Candidate Solution
+To fix the solution, we need to ensure that the result is `0` only if for all possible values of `k`, `x + k = y + (z - k)`. This can be simplified to checking if `x - y = z - 2k` for all `k`. However, this is only possible if `x - y = 0` and `z = 0`, which means `x = y` and `z = 0`.
+
+Thus, the condition for `0` should be `x == y && z == 0`.
+
+### Modified Solution
+```lean
+def vote_result (x y z : Nat) : String :=
+  let min_up := x
+  let max_up := x + z
+  let min_down := y
+  let max_down := y + z
+  if min_up > max_down then
+    "+"
+  else if min_down > max_up then
+    "-"
+  else if x == y && z == 0 then
+    "0"
+  else
+    "?"
+```
+
+### Testing the Modified Solution
+Let's test the modified solution with the failing inputs from the property-based testing.
+
+1. `x = 1`, `y = 1`, `z = 1`:
+   - `min_up = 1`, `max_up = 2`
+   - `min_down = 1`, `max_down = 2`
+   - `x == y` is true, but `z != 0`, so the result is `?`.
+
+2. `x = 3`, `y = 3`, `z = 1`:
+   - `min_up = 3`, `max_up = 4`
+   - `min_down = 3`, `max_down = 4`
+   - `x == y` is true, but `z != 0`, so the result is `?`.
+
+3. `x = 0`, `y = 0`, `z = 1`:
+   - `min_up = 0`, `max_up = 1`
+   - `min_down = 0`, `max_down = 1`
+   - `x == y` is true, but `z != 0`, so the result is `?`.
+
+4. `x = 0`, `y = 0`, `z = 2`:
+   - `min_up = 0`, `max_up = 2`
+   - `min_down = 0`, `max_down = 2`
+   - `x == y` is true, but `z != 0`, so the result is `?`.
+
+5. `x = 2`, `y = 2`, `z = 2`:
+   - `min_up = 2`, `max_up = 4`
+   - `min_down = 2`, `max_down = 4`
+   - `x == y` is true, but `z != 0`, so the result is `?`.
+
+6. `x = 3`, `y = 3`, `z = 2`:
+   - `min_up = 3`, `max_up = 5`
+   - `min_down = 3`, `max_down = 5`
+   - `x == y` is true, but `z != 0`, so the result is `?`.
+
+7. `x = 4`, `y = 4`, `z = 2`:
+   - `min_up = 4`, `max_up = 6`
+   - `min_down = 4`, `max_down = 6`
+   - `x == y` is true, but `z != 0`, so the result is `?`.
+
+8. `x = 4`, `y = 4`, `z = 5`:
+   - `min_up = 4`, `max_up = 9`
+   - `min_down = 4`, `max_down = 9`
+   - `x == y` is true, but `z != 0`, so the result is `?`.
+
+9. `x = 3`, `y = 3`, `z = 3`:
+   - `min_up = 3`, `max_up = 6`
+   - `min_down = 3`, `max_down = 6`
+   - `x == y` is true, but `z != 0`, so the result is `?`.
+
+10. `x = 4`, `y = 4`, `z = 8`:
+    - `min_up = 4`, `max_up = 12`
+    - `min_down = 4`, `max_down = 12`
+    - `x == y` is true, but `z != 0`, so the result is `?`.
+
+11. `x = 0`, `y = 0`, `z = 1`:
+    - `min_up = 0`, `max_up = 1`
+    - `min_down = 0`, `max_down = 1`
+    - `x == y` is true, but `z != 0`, so the result is `?`.
+
+12. `x = 2`, `y = 2`, `z = 2`:
+    - `min_up = 2`, `max_up = 4`
+    - `min_down = 2`, `max_down = 4`
+    - `x == y` is true, but `z != 0`, so the result is `?`.
+
+13. `x = 1`, `y = 1`, `z = 1`:
+    - `min_up = 1`, `max_up = 2`
+    - `min_down = 1`, `max_down = 2`
+    - `x == y` is true, but `z != 0`, so the result is `?`.
+
+14. `x = 4`, `y = 4`, `z = 4`:
+    - `min_up = 4`, `max_up = 8`
+    - `min_down = 4`, `max_down = 8`
+    - `x == y` is true, but `z != 0`, so the result is `?`.
+
+15. `x = 4`, `y = 4`, `z = 4`:
+    - `min_up = 4`, `max_up = 8`
+    - `min_down = 4`, `max_down = 8`
+    - `x == y` is true, but `z != 0`, so the result is `?`.
+
+16. `x = 1`, `y = 1`, `z = 2`:
+    - `min_up = 1`, `max_up = 3`
+    - `min_down = 1`, `max_down = 3`
+    - `x == y` is true, but `z != 0`, so the result is `?`.
+
+17. `x = 2`, `y = 2`, `z = 2`:
+    - `min_up = 2`, `max_up = 4`
+    - `min_down = 2`, `max_down = 4`
+    - `x == y` is true, but `z != 0`, so the result is `?`.
+
+### Conclusion
+The modified solution correctly handles the failing cases by ensuring that the result is `0` only when `x == y` and `z == 0`. For all other cases where `x == y` but `z != 0`, the result is `?`.
+
+### Final Lean Code
+```lean
+def vote_result (x y z : Nat) : String :=
+  let min_up := x
+  let max_up := x + z
+  let min_down := y
+  let max_down := y + z
+  if min_up > max_down then
+    "+"
+  else if min_down > max_up then
+    "-"
+  else if x == y && z == 0 then
+    "0"
+  else
+    "?"
+```
+
+Let's verify this code using the `check_lean_code` tool.
+
+---
+(End of DeepSeek's output)
+
+
+
 # 4. Future Work
+
+- Make the PBT script a tool available to LLMs, following the same framework as LeanTool.
+Then the LLM can call PBT as needed, and keep fixing bugs until PBT passes.
+- Improve the PBT script. Right now it is an unholy mixture of Python and Lean, purely due to my 
+lack of ability in Lean metaprogramming.  Someone with more expertise in Lean can make it better.
+Ultimately, what makes the most sense would be a Plausible library that can take a user-defined 
+proof procedure. My hope is that people find my proof of concept promising enough to make that happen.
+- Interface with other automated theorem proving tools.
+New tools are being developed, including Duper, and egg.
+- There are some problems in the `code_contests` set where the AIs was unable to produce a
+syntactically valid solution attempt. We can look into these problems, perhaps provide more syntax 
+hints in the prompting.
+- An alternative direction is to look at harder problems, e.g. the `hackercup` dataset.
+The rationale being that it may contain problems where AIs are more likely to hallucinate on.
+On the other hand, autoformalization also becomes harder, and may require some manual effort.
+- As we get to more complex problems, it will allow us to explore approaches for locating bugs.
+E.g. can the PBT proof script, besides finding counterexamples, also output proofs that those counterexamples
+voilate the specification, in a form that the LLM can understand? This may involve *informalizing*
+ proofs into natural language. Also try the approach mentioned above, do programming with
+ dependent types, with PBT embedded in subgoals. Perhaps what we need is to find a minimum working example...
 
