@@ -99,7 +99,7 @@ between the location where we receive the signal and the location of the error. 
 
 Now I will report on my initial experiments following the above outline,
 which turned into a single example. 
-I am also making available the scripts I used. 
+I am also making available [the scripts I used](https://github.com/GasStationManager/WakingUp). 
 Be forewarned that this is proof-of-concept quality code. 
 Some of it may be potentially useful for others, but it will need to be made more robust
 and more general.
@@ -123,6 +123,7 @@ which ran their code in the Lean executable and returns any outputs and syntax e
 allowing them to try to fix their syntax errors.
 As discussed above, we discard problem instances where all the models still ran into syntax errors.
 We also discard problem instances where all models passed all the test cases.
+(Implemented in [code_only.py](https://github.com/GasStationManager/WakingUp/blob/main/code_only.py))
 
 In the end, we are left with 1 problem, on which one model (DeepSeek) failed one of the four test cases.
 Let us look at this problem in more detail.
@@ -170,15 +171,19 @@ I will reproduce its problem description below.
 > Output
 >
 > +
+>
 > Input
 >
->
 > 1 1 0
+>
 > Output
+>
 > 0
+>
 > Input
 >
 > 0 0 1
+>
 > Output
 >
 > ?
@@ -255,7 +260,7 @@ was a heuristic proof script that combines together several tactics like `omega`
 and trying repeated applications of `constructor` and `split` to break down the proof goal into simpler subgoals. It is not guaranteed to return a proof for all goals, but we know for this
 problem instance the proof script did work, at least on the problem's four test cases.
 
-So I implemented a custom PBT script, that given a function signature
+So I implemented a [custom PBT script](https://github.com/GasStationManager/WakingUp/blob/main/pbt/pbt.py), that given a function signature
 and formal specification, and a candidate solution, uses Plausible to generate random values for the input arguments, evaluate the implemented function to produce output values,
 and feed the input-output pairs to the heuristic proof script from FormalizeWithTest.
 
@@ -269,7 +274,7 @@ Out of 100 randomly generated input scenarios, 83 input-output pairs were proven
 ## Correction
 
 Let us see if DeepSeek is able to fix the error, when prompted with the result of PBT.
-Specifically, I constructed a prompt containing:
+Specifically, I constructed a [prompt](https://github.com/GasStationManager/WakingUp/blob/main/pbt_recog.py) containing:
 - the problem description
 - DeepSeek's original solution
 - output of our PBT script, including the 17 input-output pairs that failed,
