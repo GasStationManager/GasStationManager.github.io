@@ -11,17 +11,17 @@ categories: AI
 
 Happy new year! Hope you all had a wonderful holiday.
 
-Since the start of our project, I have spend much of my effort building up some necessary infrastructure. I feel finally ready to tackle some of the meaty questions first posed in [the proposal](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html). 
+Since the start of our project, I have been spending much of my effort building up some necessary infrastructure. I feel finally ready to tackle some of the meaty questions first posed in [the proposal](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html). 
 In this post, let us dive into one of these topics. 
 We will expand on some ideas first discussed in Section 3 Project 1 of the original proposal, but I will try to keep this post relatively self-contained. It would be beneficial if you have read the original proposal first; but if you had read or skimmed through the original proposal before but don't remember all the details, you should be fine.
 
 To summarize roughly, our original proposal had two main sub-theses:
-    - Having coding AIs produce formally verified code is desirable, as it provide strong safety guarantees 
-    - Feedback from interactive theorem provers (ITPs) like Lean can help address the issue of hallucinations, resulting in AIs with stronger coding ability
+- Having coding AIs produce formally verified code is desirable, as it provide strong safety guarantees 
+- Feedback from interactive theorem provers (ITPs) like Lean can help address the issue of hallucinations, resulting in AIs with stronger coding ability
 
 Let us focus on the latter. How does Lean help prevent hallucinations? The proposal points to two mechanisms:
-    - during inference-time compute: we can use feedback from Lean to detect hallucinations, and recover the correct reasoning and implementation
-    - during learning: learn a strong foundation based on verified algorithms and their correctness proofs. Then progress to the next level in the curriculum.
+- during inference-time compute: we can use feedback from Lean to detect hallucinations, and recover the correct reasoning and implementation
+- during learning: learn a strong foundation based on verified algorithms and their correctness proofs. Then progress to the next level in the curriculum.
 
 In this post we focus on the first bullet, i.e. inference-time compute.
 
