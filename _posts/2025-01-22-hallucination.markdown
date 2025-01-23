@@ -282,9 +282,44 @@ and asked DeepSeek to determine why the tests failed, and try to fix the errors.
 
 DeepSeek was indeed able to produce a corrected solution. 
 When tested on the 4 original test cases, it passed all 4.
-Below is DeepSeek's complete output.
+ DeepSeek's complete output is given in the Appendix at the end of the post.
+
+## Ablation
+
+Could DeepSeek have detected and recovered from the hallucination without PBT?
+I [prompted](https://github.com/GasStationManager/WakingUp/blob/main/recog.py) DeepSeek with the problem (with formal spec) and its original solution, without PBT results,
+and asked it to review it and determine whether the solution satisfies the specification.
+Also suggested that it could try plugging in input values to find counterexamples. 
+The result: DeepSeek remained confident that its original solution was correct, and gave a 
+convincing-looking argument.
+
+# 4. Future Work
+
+- Make the PBT script a tool available to LLMs, following the same framework as LeanTool.
+Then the LLM can call PBT as needed, and keep fixing bugs until PBT passes.
+- Improve the PBT script. Right now it is an unholy mixture of Python and Lean, purely due to my 
+lack of ability in Lean metaprogramming.  Someone with more expertise in Lean can make it better.
+Ultimately, what makes the most sense would be a Plausible library that can take a user-defined 
+proof procedure. My hope is that people find my proof of concept promising enough to make that happen.
+- Interface with other automated theorem proving tools.
+New tools are being developed, including Duper, and egg.
+- There are some problems in the `code_contests` set where the AIs was unable to produce a
+syntactically valid solution attempt. We can look into these problems, perhaps provide more syntax 
+hints in the prompting.
+- An alternative direction is to look at harder problems, e.g. the `hackercup` dataset.
+The rationale being that it may contain problems where AIs are more likely to hallucinate on.
+On the other hand, autoformalization also becomes harder, and may require some manual effort.
+- As we get to more complex problems, it will allow us to explore approaches for locating bugs.
+E.g. can the PBT proof script, besides finding counterexamples, also output proofs that those counterexamples
+voilate the specification, in a form that the LLM can understand? This may involve *informalizing*
+ proofs into natural language. Also try the approach mentioned above, do programming with
+ dependent types, with PBT embedded in subgoals. Perhaps what we need is to find a minimum working example...
+
+
 
 ---
+
+# Appendix A. DeepSeek's complete final output
 
 Let's analyze the problem and the candidate solution step by step.
 
@@ -458,29 +493,8 @@ def vote_result (x y z : Nat) : String :=
 Let's verify this code using the `check_lean_code` tool.
 
 ---
+
 (End of DeepSeek's output)
 
 
-
-# 4. Future Work
-
-- Make the PBT script a tool available to LLMs, following the same framework as LeanTool.
-Then the LLM can call PBT as needed, and keep fixing bugs until PBT passes.
-- Improve the PBT script. Right now it is an unholy mixture of Python and Lean, purely due to my 
-lack of ability in Lean metaprogramming.  Someone with more expertise in Lean can make it better.
-Ultimately, what makes the most sense would be a Plausible library that can take a user-defined 
-proof procedure. My hope is that people find my proof of concept promising enough to make that happen.
-- Interface with other automated theorem proving tools.
-New tools are being developed, including Duper, and egg.
-- There are some problems in the `code_contests` set where the AIs was unable to produce a
-syntactically valid solution attempt. We can look into these problems, perhaps provide more syntax 
-hints in the prompting.
-- An alternative direction is to look at harder problems, e.g. the `hackercup` dataset.
-The rationale being that it may contain problems where AIs are more likely to hallucinate on.
-On the other hand, autoformalization also becomes harder, and may require some manual effort.
-- As we get to more complex problems, it will allow us to explore approaches for locating bugs.
-E.g. can the PBT proof script, besides finding counterexamples, also output proofs that those counterexamples
-voilate the specification, in a form that the LLM can understand? This may involve *informalizing*
- proofs into natural language. Also try the approach mentioned above, do programming with
- dependent types, with PBT embedded in subgoals. Perhaps what we need is to find a minimum working example...
 
