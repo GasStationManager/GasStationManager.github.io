@@ -218,6 +218,9 @@ And here is the test case where the solution failed. Input: `0 0 1`.
 Expected correct output: `"?"`. Actual output: `"0"`.
 
 For this problem, Sonnet and GPT 4o were able to produce solutions that passed all four test cases.
+(**Addendum 1/23:** In a subsequent run of experiments, GPT 4o returned a solution that also exhibited
+the same failure mode. Applying the rest of the pipeline described in this post produced the 
+same results.)
 
 Can you spot the error in DeepSeek's code?
 
