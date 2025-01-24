@@ -633,6 +633,7 @@ To fix this, we need to adjust the logic to correctly handle cases where `z > 0`
 4. Otherwise, return `"?"`.
 
 Let's implement this fix and verify it.
+```
 def vote_result (x y z : Nat) : String :=
   let min_upvotes := x
   let max_upvotes := x + z
@@ -658,10 +659,11 @@ def vote_result (x y z : Nat) : String :=
 #eval vote_result 1 1 5  -- Expected: "?"
 #eval vote_result 0 0 1  -- Expected: "?"
 #eval vote_result 6 6 5  -- Expected: "?"
+```
 
 ---
 
-(End of GPT 4o's output. In the final part, it utilized LeanTool by passing the code with some test cases to be executed by Lean.
+(End of GPT 4o's output. In the final part, it utilized LeanTool to pass the code with some test cases to be executed by Lean.
 Here is the result of the execution passed back:)
 ```
 {'success': True, 'output': '"?"\n"?"\n"?"\n"?"\n"?"\n"?"\n"?"\n"?"\n"?"\n', 'error': None}
