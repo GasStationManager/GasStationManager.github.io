@@ -220,7 +220,7 @@ Expected correct output: `"?"`. Actual output: `"0"`.
 For this problem, Sonnet and GPT 4o were able to produce solutions that passed all four test cases.
 (**Addendum 1/23:** In a subsequent run of experiments, GPT 4o returned a solution that also exhibited
 the same failure mode. Applying the rest of the pipeline described in this post produced the 
-same results.)
+same results. See Appendix C for details.)
 
 Can you spot the error in DeepSeek's code?
 
@@ -285,7 +285,7 @@ and asked DeepSeek to determine why the tests failed, and try to fix the errors.
 
 DeepSeek was indeed able to produce a corrected solution. 
 When tested on the 4 original test cases, it passed all 4.
- DeepSeek's complete output is given in the Appendix at the end of the post.
+ DeepSeek's complete output is given in Appendix A at the end of the post.
 
 ## Ablation
 
@@ -294,7 +294,7 @@ I [prompted](https://github.com/GasStationManager/WakingUp/blob/main/recog.py) D
 and asked it to review it and determine whether the solution satisfies the specification.
 Also suggested that it could try plugging in input values to find counterexamples. 
 The result: DeepSeek remained confident that its original solution was correct, and gave a 
-convincing-looking argument.
+convincing-looking argument. See Appendix B for the complete output.
 
 # 4. Future Work
 
@@ -499,5 +499,171 @@ Let's verify this code using the `check_lean_code` tool.
 
 (End of DeepSeek's output)
 
+# Appendix B. DeepSeek's output without access to PBT
 
+Let's analyze the candidate solution and verify if it satisfies the formal specification.
+
+### Candidate Solution Analysis
+
+The candidate solution defines `vote_result` as follows:
+
+```lean
+def vote_result (x y z : Nat) : String :=
+  let min_up := x
+  let max_up := x + z
+  let min_down := y
+  let max_down := y + z
+  if min_up > max_down then
+    "+"
+  else if min_down > max_up then
+    "-"
+  else if min_up == min_down && max_up == max_down then
+    "0"
+  else
+    "?"
+```
+
+### Formal Specification
+
+The formal specification is given by `vote_result_prop`:
+
+```lean
+def vote_result_prop (x y z : Nat) (out : String) : Prop :=
+  (out = "+" ∧ ∀ k : Nat, k ≤ z → x + k > y + (z - k)) ∨
+  (out = "-" ∧ ∀ k : Nat, k ≤ z → y + (z - k) > x + k) ∨
+  (out = "0" ∧ ∀ k : Nat, k ≤ z → x + k = y + (z - k)) ∨
+  (out = "?" ∧ ∃ k1 k2 : Nat, k1 ≤ z ∧ k2 ≤ z ∧
+    ((x + k1 > y + (z - k1) ∧ x + k2 < y + (z - k2)) ∨
+     (x + k1 = y + (z - k1) ∧ x + k2 ≠ y + (z - k2)) ∨
+     (x + k1 < y + (z - k1) ∧ x + k2 > y + (z - k2))))
+```
+
+### Verification
+
+We need to check if the candidate solution satisfies `vote_result_prop`.
+
+1. **Case 1: `min_up > max_down`**
+   - This corresponds to `x > y + z`.
+   - The candidate solution returns `"+"`.
+   - According to `vote_result_prop`, this should satisfy `∀ k : Nat, k ≤ z → x + k > y + (z - k)`.
+   - Since `x > y + z`, adding `k` to `x` and subtracting `k` from `z` will still keep `x + k > y + (z - k)`.
+
+2. **Case 2: `min_down > max_up`**
+   - This corresponds to `y > x + z`.
+   - The candidate solution returns `"-"`.
+   - According to `vote_result_prop`, this should satisfy `∀ k : Nat, k ≤ z → y + (z - k) > x + k`.
+   - Since `y > x + z`, adding `z - k` to `y` and subtracting `k` from `z` will still keep `y + (z - k) > x + k`.
+
+3. **Case 3: `min_up == min_down && max_up == max_down`**
+   - This corresponds to `x = y` and `x + z = y + z`.
+   - The candidate solution returns `"0"`.
+   - According to `vote_result_prop`, this should satisfy `∀ k : Nat, k ≤ z → x + k = y + (z - k)`.
+   - Since `x = y`, adding `k` to `x` and subtracting `k` from `z` will result in `x + k = y + (z - k)`.
+
+4. **Case 4: Otherwise**
+   - The candidate solution returns `"?"`.
+   - According to `vote_result_prop`, this should satisfy the condition for uncertainty.
+   - The candidate solution correctly identifies uncertainty when the result could be either `"+"`, `"-"`, or `"0"` depending on how the `z` unknown votes are distributed.
+
+### Conclusion
+
+The candidate solution correctly implements the logic to determine the vote result or report uncertainty based on the given conditions. It satisfies the formal specification `vote_result_prop`.
+
+### Final Answer
+
+<Result>
+def vote_result (x y z : Nat) : String :=
+  let min_up := x
+  let max_up := x + z
+  let min_down := y
+  let max_down := y + z
+  if min_up > max_down then
+    "+"
+  else if min_down > max_up then
+    "-"
+  else if min_up == min_down && max_up == max_down then
+    "0"
+  else
+    "?"
+
+theorem vote_result_spec (x y z : Nat) : vote_result_prop x y z (vote_result x y z) := by
+  sorry  -- The proof is left as an exercise
+</Result>
+
+---
+
+(end of DeepSeek's output)
+
+# Appendix C. GPT 4o's output
+Due to randomness in the model output, in one of the subsequent runs GPT 4o also 
+produced a hallucinated output with the same failure mode as DeepSeek's. 
+Applying the same PBT pipeline, GPT 4o was able to detect and fix the error. 
+Here is its final output.
+
+--- 
+
+The candidate solution is failing for several test cases, all of which involve situations where the number of upvotes and downvotes are equal, but there are unknown votes (`z > 0`). In these cases, the result should be `"?"` because the unknown votes could sway the result in either direction, making it uncertain.
+
+Let's analyze the candidate solution and identify the issue:
+
+```lean
+def vote_result (x y z : Nat) : String :=
+  let min_upvotes := x
+  let max_upvotes := x + z
+  let min_downvotes := y
+  let max_downvotes := y + z
+
+  if max_upvotes < min_downvotes then
+    "-"
+  else if max_downvotes < min_upvotes then
+    "+"
+  else if min_upvotes = min_downvotes then
+    "0"
+  else
+    "?"
+```
+
+The issue lies in the condition `else if min_upvotes = min_downvotes then "0"`. This condition does not account for the possibility of unknown votes (`z > 0`) that could change the balance between upvotes and downvotes. If `z > 0`, even if `x = y`, the result should be `"?"` because the unknown votes could lead to either more upvotes or more downvotes.
+
+To fix this, we need to adjust the logic to correctly handle cases where `z > 0` and `x = y`. Let's update the code:
+
+1. Check if `max_upvotes < min_downvotes` for `"-"`.
+2. Check if `max_downvotes < min_upvotes` for `"+"`.
+3. Check if `z = 0` and `min_upvotes = min_downvotes` for `"0"`.
+4. Otherwise, return `"?"`.
+
+Let's implement this fix and verify it.
+def vote_result (x y z : Nat) : String :=
+  let min_upvotes := x
+  let max_upvotes := x + z
+  let min_downvotes := y
+  let max_downvotes := y + z
+
+  if max_upvotes < min_downvotes then
+    "-"
+  else if max_downvotes < min_upvotes then
+    "+"
+  else if z = 0 ∧ min_upvotes = min_downvotes then
+    "0"
+  else
+    "?"
+
+-- Testing the updated function against the failed test cases
+#eval vote_result 0 0 1  -- Expected: "?"
+#eval vote_result 1 1 2  -- Expected: "?"
+#eval vote_result 2 2 5  -- Expected: "?"
+#eval vote_result 1 1 1  -- Expected: "?"
+#eval vote_result 0 0 5  -- Expected: "?"
+#eval vote_result 0 0 2  -- Expected: "?"
+#eval vote_result 1 1 5  -- Expected: "?"
+#eval vote_result 0 0 1  -- Expected: "?"
+#eval vote_result 6 6 5  -- Expected: "?"
+
+---
+
+(End of GPT 4o's output. In the final part, it utilized LeanTool by passing the code with some test cases to be executed by Lean.
+Here is the result of the execution passed back:)
+```
+{'success': True, 'output': '"?"\n"?"\n"?"\n"?"\n"?"\n"?"\n"?"\n"?"\n"?"\n', 'error': None}
+```
 
