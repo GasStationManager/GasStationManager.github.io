@@ -520,6 +520,8 @@ exploring. A few ideas to explore:
 
 I will publish some of my initial explorations on GitHub in a few days; and will update
 this article with the link.
+(**Update 1/22:** See [progress report](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html) on some more thoughts along this direction,
+and some initial experiments.)
 
 ### Project 2. Creating and Sharing Data
 
