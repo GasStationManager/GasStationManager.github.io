@@ -86,7 +86,7 @@ Lean 4 has the `Plausible` library that provides such a property-based testing f
 2. Automated Theorem Proving (ATP) tools. These are tools designed to automatically generating a proof that closes relatively simple goals. Some may involve calling external satisfiability or SMT solvers. How can these tools be applied in our setting? For example, instead of trying random inputs, perhaps counterexamples can be found via SAT/SMT solving. Another use case that we will see more below is to combine PBT and ATP: after plugging in the input values, we may be left with a nontrivial proof task, that we can apply ATP to.
 3. Programming with dependent types. Suppose we have Recognition. How do we find and fix the bug?
 As the program gets more complex, this becomes harder. 
-In previous blog posts I have explored programming with dependent types: annotating data with the logical properties they are supposed to satisfy (via subtyping), and then proving the resulting subgoals. I saw it as a promising and natural approach to produce verified code; 
+In previous blog posts ([1](https://gasstationmanager.github.io/ai/2024/12/03/memoization1.html), [2](https://gasstationmanager.github.io/ai/2024/12/09/dp2.html)) I have explored programming with dependent types: annotating data with the logical properties they are supposed to satisfy (via subtyping), and then proving the resulting subgoals. I saw it as a promising and natural approach to produce verified code; 
 now I think it is equally if not more promising as a way to locate potential hallucinations.
 Basically, use PBT and ATP to test the correctness of the goals resulting from subtyping.
 If we find counterexamples, we now know that this particular assumption we made about this piece of data is wrong. 
@@ -97,9 +97,9 @@ between the location where we receive the signal and the location of the error. 
 
 # 3. Minimum Working Example
 
-Now I will report on my initial experiments following the above outline,
+Now I report on my initial experiments following the above outline,
 which turned into a single example. 
-I am also making available [the scripts I used](https://github.com/GasStationManager/WakingUp). 
+I am also making available the scripts I used at the GitHub repo [WakingUp](https://github.com/GasStationManager/WakingUp). 
 Be forewarned that this is proof-of-concept quality code. 
 Some of it may be potentially useful for others, but it will need to be made more robust
 and more general.

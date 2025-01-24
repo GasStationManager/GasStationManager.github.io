@@ -5,17 +5,17 @@ date:   2024-11-04 07:30:00 +0000
 categories: AI
 ---
 
-**Update 1/22/25:** Third [progress report](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html), on hallucination detection and recovery. 
+**Update 1/22/25:** Third [progress report](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html), on hallucination detection and recovery. Code available at the GitHub repo [WakingUp](https://github.com/GasStationManager/WakingUp).
 
 **Update 12/4:** [A post](https://gasstationmanager.github.io/ai/2024/12/03/memoization1.html) that expands on Project 1 part 3 with a worked example, and initial exploration of teaching it to an AI. **12/9:** [A follow-up post](https://gasstationmanager.github.io/ai/2024/12/09/dp2.html) along the same theme.
 
-**Update 12/1:** Second [progress report](https://gasstationmanager.github.io/ai/2024/11/29/progress2.html).
+**Update 12/1:** Second [progress report](https://gasstationmanager.github.io/ai/2024/11/29/progress2.html), with initial announcement of [LeanTool](https://github.com/GasStationManager/LeanTool).
 
 **Update 11/19:** First [progress report](https://gasstationmanager.github.io/ai/2024/11/19/progress1.html).
 
 **Update 11/10:** Added GitHub Repo [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest) for Project 3.
 
-**Quick Links to GitHub Repos:** [Arena](https://github.com/GasStationManager/CodeProofTheArena) / [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark) / [Formalize](https://github.com/GasStationManager/FormalizeWithTest) / [LeanTool](https://github.com/GasStationManager/LeanTool)
+**Quick Links to GitHub Repos:** [Arena](https://github.com/GasStationManager/CodeProofTheArena) / [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark) / [Formalize](https://github.com/GasStationManager/FormalizeWithTest) / [LeanTool](https://github.com/GasStationManager/LeanTool) / [WakingUp](https://github.com/GasStationManager/WakingUp)
 
 ---
 
