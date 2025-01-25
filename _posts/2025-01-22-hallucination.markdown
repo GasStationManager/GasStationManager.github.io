@@ -129,8 +129,8 @@ In the end, we are left with 1 problem, on which one model (DeepSeek) failed one
 Let us look at this problem in more detail.
 
 It is [Problem 'vote_result'](http://www.codeproofarena.com:8000/challenges/40)
- on the CodeWithProofs: The Arena demo site; you can click on the link to try solving it yourself.
-I will reproduce its problem description below.
+ on the *CodeWithProofs: The Arena* demo site; you can click on the link to try solving it yourself.
+Its problem description is copied below.
 
 > Nauuo is a girl who loves writing comments.
 >
@@ -217,14 +217,20 @@ def vote_result (x y z : Nat) : String :=
 And here is the test case where the solution failed. Input: `0 0 1`.
 Expected correct output: `"?"`. Actual output: `"0"`.
 
+Can you spot the error in DeepSeek's code?
+
 For this problem, Sonnet and GPT 4o were able to produce solutions that passed all four test cases.
 (**Addendum 1/23:** In a subsequent run of experiments, GPT 4o returned a solution that also exhibited
 the same failure mode. Applying the rest of the pipeline described in this post produced the 
 same results. See Appendix C for details.)
+(**Addendum 1/25:** What about "reasoning" versions of the models, like o1, o1-mini and DeepSeek R1?
+One issue is that tool calling (which LeanTool depends on) is not supported by
+DeepSeek R1 and o1-mini;  it is suppored in o1 but only available for Tier 5 organizations ($1000+ spent). Without using LeanTool, I sent the (code-only mode) prompt to DeepSeek R1's web interface. After 118 seconds of deliberation, it returned a solution that is logically correct but contains syntax errors. Manually prompting it with the syntax error message allowed it to fix its 
+error.)
 
-Can you spot the error in DeepSeek's code?
 
 ## Recognition
+
 How do we make DeepSeek recognize that it made a mistake? Recall that 
 we cannot show it the test cases; but we can now make use of the problem's formal specification:
 ```
@@ -278,7 +284,7 @@ Out of 100 randomly generated input scenarios, 83 input-output pairs were proven
 
 Let us see if DeepSeek is able to fix the error, when prompted with the result of PBT.
 Specifically, I constructed a [prompt](https://github.com/GasStationManager/WakingUp/blob/main/pbt_recog.py) containing:
-- the problem description
+- the problem description, with formal specification
 - DeepSeek's original solution
 - output of our PBT script, including the 17 input-output pairs that failed,
 and asked DeepSeek to determine why the tests failed, and try to fix the errors.
