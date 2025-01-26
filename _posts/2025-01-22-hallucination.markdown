@@ -65,12 +65,12 @@ fit the bill nicely.
 ## Tasks
 
 Now, we use the same AI model that hallucinated on the problem previously, but give it access to the formal specificaiton, and features of the interactive theorem prover, and try to get it to detect and fix the errors. We can break this into the following sub-tasks:
-1. Recognition: conclusively recognize that the current implementation is wrong.
+1. **Recognition:** conclusively recognize that the current implementation is wrong.
 Of course, failure to prove that the implementation is correct gives some evidence,
 but such evidence is weak, given the current ability level of the provers.
 We would like the AI to be able to determine that the implementation is wrong. Once we determine that, we will be able to direct more effort and compute trying to fix the error rather than to prove correctness.
-2. Locating the error: the code could be mostly correct; the error may be located at one specific step in the reasoning, corresponding to specific lines in the code.
-3. Correction. Fix the bug and iterate.
+2. **Locating the error:** the code could be mostly correct; the error may be located at one specific step in the reasoning, corresponding to specific lines in the code.
+3. **Correction.** Fix the bug and iterate.
 
 We will measure the correctness of the final code output with the held-out test cases,
 which the AI will not have access to during its reasoning.
@@ -109,7 +109,7 @@ and more general.
 I start with the 10 problem instances outputted from my FormalizeWithTest preliminary experiment
 as reported in my previous [progress report](https://gasstationmanager.github.io/ai/2024/11/29/progress2.html).
 To recap:
-- The original source are a sample of 30 problem instances from the `code_contests` dataset.
+- The original source are a sample of 30 problem instances from the [code_contests dataset](https://huggingface.co/datasets/deepmind/code_contests).
 These were chosen to be relatively easy (with codeforces rating less than 1100), to make autoformalization easier.
 - After running through the FormalizeWithTest pipeline, we are left with 10 problems, with autoformalized
 function signature and formal specification in Lean 4, and 
@@ -576,7 +576,7 @@ We need to check if the candidate solution satisfies `vote_result_prop`.
 The candidate solution correctly implements the logic to determine the vote result or report uncertainty based on the given conditions. It satisfies the formal specification `vote_result_prop`.
 
 ### Final Answer
-
+```
 <Result>
 def vote_result (x y z : Nat) : String :=
   let min_up := x
@@ -595,6 +595,7 @@ def vote_result (x y z : Nat) : String :=
 theorem vote_result_spec (x y z : Nat) : vote_result_prop x y z (vote_result x y z) := by
   sorry  -- The proof is left as an exercise
 </Result>
+```
 
 ---
 
