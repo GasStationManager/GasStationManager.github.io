@@ -24,9 +24,9 @@ Comments and suggestions are welcome. Meanwhile, I got the domain name [lean4ai.
 1. Read the original [proposal](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html), Sections 1 and 2, and Section 3 up to the beginning of the Projects. This will give you a good sense of the  motivation of the project, and the overall direction.
 2. Skim through the rest of the proposal including the Projects, to get a rough sense of what they are. If you find one or more of the projects particularly exciting, feel free to read those in more detail, and refer to the relevant materials in the next bullet. 
 3. The subsequent material can be divided into three streams:
-  a. **Dataset creation and sharing.** Current efforts are happening in the following sub-projects:
-            i. Code with Proof: the Arena. Relevant reading: Progress report 1. Code on GitHub: [Arena], [SafeVerify]
-            ii. Code with Proof Benchmark. Code on GitHub: [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark). Also available on HuggingFace.
-            iii. FormalizeWithTest. Relevant reading: Progress Report 2. Code on GitHub: [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest), [LeanTool](https://github.com/GasStationManager/LeanTool)
-  b. **Hallucination Detecting and Recovery.** Reading: [Progrees report 3](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html). Code on GitHub: [WakingUp](https://github.com/GasStationManager/WakingUp), [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest), [LeanTool](https://github.com/GasStationManager/LeanTool)
-  c. **Programming with dependent types.** Reading: [memoization], [dp] Code on GitHub: [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark). Arena demo
+  - **Dataset creation and sharing.** Current efforts are happening in the following sub-projects:
+            i. **Code with Proof: the Arena.** Relevant reading: Progress report 1. Code on GitHub: [Arena], [SafeVerify]
+            ii. **Code with Proof Benchmark.** Code on GitHub: [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark). Also available on HuggingFace.
+            iii. **FormalizeWithTest.** Relevant reading: Progress Report 2. Code on GitHub: [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest), [LeanTool](https://github.com/GasStationManager/LeanTool)
+  - **Hallucination Detecting and Recovery.** Reading: [Progrees report 3](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html). Code on GitHub: [WakingUp](https://github.com/GasStationManager/WakingUp), [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest), [LeanTool](https://github.com/GasStationManager/LeanTool)
+  - **Programming with dependent types.** Reading: [memoization](https://gasstationmanager.github.io/ai/2024/12/03/memoization1.html), [dp](https://gasstationmanager.github.io/ai/2024/12/09/dp2.html) Code on GitHub: [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark). Arena demo
