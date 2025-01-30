@@ -18,10 +18,10 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Gas Station Secret Lab
+title: Lean4AI @ Gas Station Secret Lab
 email: GasStationCodeManager@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Musings on AI.
+  Using iteractive theorem provers like Lean to tackle the great challenges of generative AI: Safety and Hallucination.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  GasStationManager
