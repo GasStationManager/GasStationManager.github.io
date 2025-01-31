@@ -7,11 +7,12 @@ categories: AI
 
 The other day, I was chatting with a friend and trying to explain my research program. The question arises: How should someone new learn about this topic?
 
-My default answer had been to start with the original [proposal](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html), and then to read the follow up posts on this blog and to play with the GitHub repos linked from them. 
+My default answer had been to start with the original [proposal](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html), and then to read the follow up posts on this blog and to play with the GitHub repos linked from them. The drawback is that with six blog posts so far and about the same number of github repos, it would a very long read.
 
 Thinking about this more, I believe 
 a reading guide that lays out the various components in a more structured and logical sequence can be valuable. 
-Hence this post.
+Hence this post. Readers may use the reading guide to focus their attention on a particular branch of inquiry that they find more interesting. Or, you may still want to read everything,
+but with the overall structure in mind, you can hopefully get a better sense of how they fit together.
 
 Also, does our project need a catchy title? I've been thinking about the title  **Lean4AI**.
 This is a play on related project titles like "AI for Lean", "AI for Math" etc.
@@ -32,7 +33,7 @@ Comments and suggestions are welcome. Meanwhile, I got the domain name [lean4ai.
         - **FormalizeWithTest.** Autoformalization of coding problems, verified with test cases. Relevant reading: [Progress Report 2](https://gasstationmanager.github.io/ai/2024/11/29/progress2.html). Code on GitHub: [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest), [LeanTool](https://github.com/GasStationManager/LeanTool).
         Some of the results of the autoformalization are on [Arena demo](http://www.codeproofarena.com:8000/).
     - **Hallucination Detecting and Recovery.** We use Lean to help LLMs
-    detect and recover from hallucinations. Reading: [Progress report 3](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html). Code on GitHub: [WakingUp](https://github.com/GasStationManager/WakingUp) is the main repo; dataset preprocessing provided by [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest); also uses[LeanTool](https://github.com/GasStationManager/LeanTool) for LLM-Lean interaction.
+    detect and recover from hallucinations. Reading: [Progress report 3](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html). Code on GitHub: [WakingUp](https://github.com/GasStationManager/WakingUp) is the main repo; dataset preprocessing provided by [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest); also uses [LeanTool](https://github.com/GasStationManager/LeanTool) for LLM-Lean interaction.
     - **Programming with dependent types.** A promising approach for producing verified code, and for easily locating errors while generating code. Reading: [Memoization example](https://gasstationmanager.github.io/ai/2024/12/03/memoization1.html), [DP example](https://gasstationmanager.github.io/ai/2024/12/09/dp2.html), and [some discussion of future directions relating to hallucination detection](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html). Code on GitHub: Some of the solutions in [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark) are written in this style. Practice on [Arena demo](http://www.codeproofarena.com:8000/).
 
 ## Contribubting
