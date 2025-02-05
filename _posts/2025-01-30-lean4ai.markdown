@@ -36,6 +36,12 @@ Comments and suggestions are welcome. Meanwhile, I got the domain name [lean4ai.
     detect and recover from hallucinations. Reading: [Progress report 3](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html). Code on GitHub: [WakingUp](https://github.com/GasStationManager/WakingUp) is the main repo; dataset preprocessing provided by [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest); also uses [LeanTool](https://github.com/GasStationManager/LeanTool) for LLM-Lean interaction.
     - **Programming with dependent types.** A promising approach for producing verified code, and for easily locating errors while generating code. Reading: [Memoization example](https://gasstationmanager.github.io/ai/2024/12/03/memoization1.html), [DP example](https://gasstationmanager.github.io/ai/2024/12/09/dp2.html), and [some discussion of future directions relating to hallucination detection](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html). Code on GitHub: Some of the solutions in [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark) are written in this style. Practice on [Arena demo](http://www.codeproofarena.com:8000/).
 
+
+## Diagram of Data Creation Processes
+
+(**Added 2/5**) Here is a rough drawing of how our various projects relate to each other in  terms of data creation.
+![Data creation processes](/images/data_overview.jpg)
+
 ## Contribubting
 
 If you are interested in contributing or collaborating, feel free to contact me at
