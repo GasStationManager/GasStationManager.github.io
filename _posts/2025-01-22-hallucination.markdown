@@ -92,7 +92,7 @@ Basically, use PBT and ATP to test the correctness of the goals resulting from s
 If we find counterexamples, we now know that this particular assumption we made about this piece of data is wrong. 
 
 At a high level, the challenge we face when trying to go from Recognition to Locating the bug
-is one of credit assignment. We received a signal (e.g. via PBT) that something is wrong, and need to find what caused the signal. And one way to address this is to try to minimize the "distance"
+is one of *credit assignment*. We received a signal (e.g. via PBT) that something is wrong, and need to find what caused the signal. And one way to address this is to try to minimize the "distance"
 between the location where we receive the signal and the location of the error. Framed this way, subtyping becomes the natural answer.
 
 # 3. Minimum Working Example
