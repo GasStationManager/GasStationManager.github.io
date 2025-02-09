@@ -18,6 +18,16 @@ Once scaled up, we will be able to create a data set of these.
 Whereas our earlier projects like Arena, Benchmark and FormalizeWithTest aims to create or collect data sets that are either unlabeled (problems only) or labeled (problems with solutions),
 here we are creating data of the problem solving *process*.
 This can be useful for training / tuning of "reasoning" models.
+This could be done either via RL, like what o1 & o3 are allegedgly trained with,
+or via supervised fine tuning / distillation, for example like recent work that distills reasonaing models like Deepseek R1 to fine tune a smaller model.
+
+What can be learned from such data?
+- better world models, of Lean and of the underlying algorithms used. So that next time, the AI won't hallucinate.
+- stronger ability to detect and recover from hallucinations. One aspect is how best to use 
+the tools that we are providing, e.g. when to invoke what tool, and how to interpret the information the tools return.
+Another  aspect is to perhaps internalize some of the reasoning strategies that our tools help implement;  e.g. given the problem and candidate solution,
+what test input values tend to be  critical tests of the correctness of the solution?
+And once hallucination is detected, what are good strategies to diagnose the source of the error?
 
 Here is a rough drawing of how our various projects relate to each other in  terms of data creation.
 
@@ -267,7 +277,7 @@ The benchmark was designed so that while the coding tasks are often pretty basic
 the proof tasks are somewhat more nontrivial. Now we only focus on the coding part.
 Still, it is a good testing ground since it is available.
 
-I used a modified version `pbt.py` to create the test cases. (The part that generates random input values
+I wrote a [script](https://github.com/GasStationManager/WakingUp/blob/main/pbt/make_tests.py) that is an adapted version of `pbt.py` to create the test cases. (The part that generates random input values
 is the same; now instead of calling the  verification script I just record the output valuese
 evaluated by the solutions.)
 For some of the problems it was not able to generate test cases
