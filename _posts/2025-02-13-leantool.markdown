@@ -1,0 +1,152 @@
+---
+layout: post
+title:  "LeanTool: Progress and Roadmap"
+date:   2025-02-13 07:30:00 +0000
+categories: AI
+---
+
+## 1. A Digression
+
+There has been a great amount of developments in generative AI since I first started working on [this project](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html) 
+in the second half of 2024. Perhaps most relevant to us are the following trends:
+- Newer models  with  stronger and stronger general intelligence and coding ability.
+- The rise of reasoning models, from the initial o1 to the recent flurry of releases 
+including o3-mini, DeepSeek r1, Gemini Flash Thinking, Qwen QwQ.
+
+On the one hand, it is important not to let short term developments affect too much our long term goal.
+In that regard, nothing has  changed in terms of both the importance of addressing the challenges of 
+Safety and Hallucination, 
+as well as the relevance of our proposed approach via interactive theorem provers like Lean.
+On the other hand, the following anecdote did leave an impression on me, and made me think more
+on the short term direction of our project.
+
+Some of you may have heard of [Humanity's Last Exam](https://lastexam.ai/),
+a recent crowdsourcing effort to collect problems that are challenging to today's top AIs.
+One of my submitted problems got accepted into its final dataset, 
+meaning that the top AIs at the time (a couple months ago) were not able to give a correct answer to the question.
+
+I was proud of the question. I came across it many years ago, at a time  when I was 
+doing academic research. I think a couple of factors made the problem hard for LLMs:
+- it is a surprsing result; meaning that it would be hard to guess the correct answer given a surface knowledge of the textbook definitions of the  field.
+- it is not very useful by itself, so it is unlikely to be the main result of any publication. So even armed with a search engine, an LLM would not be able to find the answer directly.
+
+So the only way to discover the correct answer is by reasoning. While I thought that eventually
+an AI could solve it, I honestly did not expect that to happen before the Humanity's Last Exam dataset eventually ends up in the training data of the next frontier models, rendering the point moot.
+
+Well, a couple of days ago I tried the problem on the newly-released o3-mini-high.
+It aced the question.
+Looking at its reasoning trace, it did not luck into the solution; rather it got there
+through a sequence of solid, high-quality reasoning steps:
+trying on small examples; noticing a pattern; forming a hypothesis; 
+exploring approaches for proving the hypothesis; proving a special case; and finally proving the general case.
+And I do not believe it saw my solution in the Humanity's last exam dataset, since the dataset has just been posted so it would not have been in o3-mini's training data, and furthermore it came up with a different proof from mine.
+
+Of course o3-mini has done great things in many benchmarks, but seeing it first  hand, I was thoroughly impressed. Takaways:
+- This is an impressive level of reasoning ability. And the trend will continue:
+we will soon likely get models that are even stronger.
+What that means for our project, is that at least in the short term, perhaps the most fruitful directions will be to build inference-time 
+scaffolding that enhances the models' ability to code and to prove. 
+This way we will be able leverage these advances in the base models, rather than trying to 
+compete with them by training a new model.
+If our inference-time enhancements are successful, we can then
+use the reasoning trace as data to help train the next iteration of models.
+- Since o1 came out, I have been a bit skeptical of this style of baking reasoning into the model via RL. I was leaning more towards the approach of scaling up inference compute via scaffolding on top of a base model, up to and including tree search, especially for coding, because that makes it easy 
+to insert ground truth feedback, including from Lean. 
+Nevertheless, we should say "Why Not Both", and make sure our tools work well with the new reasoning models like o3, Deepseek r1, etc.
+- o3-mini-high solved this question in a long chain of informal mathematical reasoning steps. (By *informal* I mean no formal theorem prover like Lean was involved.)
+This kind of informal reasoning can be very effective,
+and I think essential, since aspects like exploration, experimentation, and discovery
+do not (yet) have counterparts in formal theorem proving.
+On the other hand, these models can and do hallucinate sometimes, and the surest way
+to detect and recover from hallucinations is with the help of formal tools like Lean
+as explored in my [recent](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html)  [posts](https://gasstationmanager.github.io/ai/2025/02/05/hallucination-followup.html).
+So one thing to keep in mind as we design and  build our tools is how to best combine the informal and formal.  One idea for example: o3-mini-high is very strong at informal reasoning, while Sonnet 3.5 remains the best Lean coder. What would be a good way to combine their strengths?
+
+
+## 2. LeanTool
+
+With the above in mind. The foundation of our suite of inference-time tools
+is [LeanTool](https://github.com/GasStationManager/LeanTool), our LLM-Lean interaction library.
+On the one hand it is an extremely simple utility, that allows the LLM to talk directly to Lean and get feedback; 
+on the other hand it is very effective. We have models that are very capable in general, but perhaps unfamiliar with the current syntax of Lean 4. 
+Also, the task of producing sytactially-correct Lean code can be pretty demanding, 
+with the strict type checking, and sometimes proof obligations, e.g. to show termination.
+LeanTool provides the feedback loop that allows LLMs to fix its own errors and produce valid code.
+
+LeanTool is and will be under continuous development, to make it more robust, more versatile to fit various use cases, more user friendly, and more feature-rich. In the rest of this post I report on some recent progress in LeanTool, and elaborate on the roadmap going forward. 
+
+### Plain-Text Mode
+
+In LeanTool, LLM-Lean interaction is achieved via *tool calls* from the LLM to Lean, which is part of the reason for its name.
+However,
+some of the newer reasoning models (including Deepseek r1 and Gemini-2-flash-thinking)
+do not yet support tool/function calls.
+Furthermore, it has been argued that LLMs do better when outputing code formatted in plain text instead of JSON (as in the case of tool calls); 
+this  is because formatting code as JSON  strings involves some additional escaping of special
+characters like newlines and  quotes, which can be an additional source of poential errors, and overall imposes a higher "cognitive burden" on the LLMs to keep track of the formatting.
+
+So I have implemented *plain text mode* as an option for LeanTool: 
+instead of asking the LLMs to send code via tool calls (formatted as JSON strings), put code in the response message, enclosed in `<Try>` ... `</Try>` tags.
+
+This allows LeanTool to be used by models that does not yet support tool calls,
+including r1 and Gemini-2-flash-thinking.
+Here's r1's solution (with LeanTool's help) to the beautiful table problem [discussed previously](https://gasstationmanager.github.io/ai/2025/02/05/hallucination-followup.html).
+
+```
+def beautiful_table (n k : Nat) (h1 : n ≥ 1) (h2 : k ≥ 1) : List (List Int) :=
+  List.range n |>.map (fun i =>
+    List.range n |>.map (fun j => if j == i then (k : Int) - (Int.ofNat (n - 1)) else 1))
+```
+I was initially skeptical of this solution as it would in some cases output tables with negative values on the diagonal. But looking back at the problem description,
+nothing in it disallows negative numbers, as long as the absolute values stay within `k`
+which this solution satisfies. The correctness is confirmed by running the PBT script on the solution.
+
+Gemini-2-flash-thinking with LeanTool also solved the problem, using the approach that filled the diagonal with `k`.
+
+### Plugins
+
+I am starting to implement a "plugins" system into LeanTool.
+At a high level, a plugin is an optional feature, that the user can choose to include
+at run time.
+For example, this could be optional but commonly useful instructions that 
+can  be added to the system messages. Say one for proving tasks and one for coding tasks.
+It can also be something you want to happen on the Lean  processing side.
+
+Here is a  tentative interface design. A plugin is a python object that has the following members:
+- `sys_msg`: a string that will be attached to the system message
+- `async def process(self, code, result)`: a method that will be executed after the main Lean executable finishes. Takes in the LLM submitted `code`, and `result` a dict that records the results of the processing so far. The method should return the new result dict.
+
+In the future, as the need arises, the plugin may include definitions of additional tool call choices made available to the LLM.
+
+As an example implementation, I refactored the existing feature of  
+loading goal states from `sorry`s in code (via calling Pantograph)
+as a plugin.
+This is defined as the class `LoadSorry` in
+[leantool.py](https://github.com/GasStationManager/LeanTool/blob/main/leantool.py).
+
+More to come. Suggestions / requests for plugin ideas are welcome!
+
+
+### API Server Demo
+
+Besides being a Python library, another way to use LeanTool is via its OpenAI-compatible
+API proxy server: users' queries are routed through to LeanTool and the LLM, and the LLM's response is routed back out. I think this is a particularly versatile way for human-facing use cases, e.g. connecting to copilot-style coding assistant interfaces.
+
+You can run the API proxy server locally; meanwhile a demo of the proxy server is up 
+at [http://www.codeproofarena.com:8800/v1](http://www.codeproofarena.com:8800/v1). 
+Just point your coding assistant to this URL, and use your own API key for the LLM you want to use; 
+see LeanTool [README] for more detailed set up instructions.
+
+### Roadmap
+
+What's next?
+I hope LeanTool can serve as a versatile building block
+upon which more interesting things can be built. Here're a few ongoing and upcoming efforts.
+
+- *Hallucination detection and recovery*. Once the functionalities we developed in our [initial](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html)
+[experiments](https://gasstationmanager.github.io/ai/2025/02/05/hallucination-followup.html) are more mature, they would be a natural fit as plugin(s) for LeanTool.
+- *Autoformalization*. The first application of LeanTool was for [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest), where it was used to help produce formalized specifications that are syntactically valid. 
+I have been doing some thinking on ways to improve the pipeline; will post about my progress.
+Beyond this particular project, I believe that an autoformalization  agent that can  help create formal specifications (with humans in the loop) will be extremely valuable in the future.
+
+As always, suggestions are welcome. What would *you* like to do using LeanTool?

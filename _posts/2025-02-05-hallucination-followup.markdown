@@ -18,12 +18,12 @@ Once scaled up, we will be able to create a data set of these.
 Whereas our earlier projects like Arena, Benchmark and FormalizeWithTest aims to create or collect data sets that are either unlabeled (problems only) or labeled (problems with solutions),
 here we are creating data of the problem solving *process*.
 This can be useful for training / tuning of "reasoning" models.
-This could be done either via RL, like what o1 & o3 are allegedgly trained with,
-or via supervised fine tuning / distillation, for example like recent work that distills reasonaing models like Deepseek R1 to fine tune a smaller model.
+This could be done either via RL, like what Deepseek r1 and (allegedly) o1 & o3 are trained with,
+or via supervised fine tuning.
 
 What can be learned from such data?
 - better world models, of Lean and of the underlying algorithms used. So that next time, the AI won't hallucinate.
-- stronger ability to detect and recover from hallucinations. One aspect is how best to use 
+- stronger ability to detect and recover from hallucinations at inference time. One aspect is how best to use 
 the tools that we are providing, e.g. when to invoke what tool, and how to interpret the information the tools return.
 Another  aspect is to perhaps internalize some of the reasoning strategies that our tools help implement;  e.g. given the problem and candidate solution,
 what test input values tend to be  critical tests of the correctness of the solution?
