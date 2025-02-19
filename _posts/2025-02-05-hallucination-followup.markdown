@@ -5,6 +5,11 @@ date:   2025-02-05 07:30:00 +0000
 categories: AI
 ---
 
+* Do not remove this line (it will not be displayed)
+{:toc}
+
+## 0. Preface
+
 In this followup update to my [initial experiment](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html), I report on some additional results as I apply the same approach
 to more problem instances.
 
@@ -32,6 +37,7 @@ And once hallucination is detected, what are good strategies to diagnose the sou
 Here is a rough drawing of how our various projects relate to each other in  terms of data creation.
 
 ![Data creation processes](/images/data_overview.jpg)
+
 
 ## 1. Creating Beautiful Tables with Sonnet
 

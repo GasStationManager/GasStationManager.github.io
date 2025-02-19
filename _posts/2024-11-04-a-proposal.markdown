@@ -12,7 +12,7 @@ categories: AI
 
 **Update 12/4:** [A post](https://gasstationmanager.github.io/ai/2024/12/03/memoization1.html) that expands on Project 1 part 3 with a worked example, and initial exploration of teaching it to an AI. **12/9:** [A follow-up post](https://gasstationmanager.github.io/ai/2024/12/09/dp2.html) along the same theme.
 
-**Update 12/1:** Second [progress report](https://gasstationmanager.github.io/ai/2024/11/29/progress2.html), with initial announcement of [LeanTool](https://github.com/GasStationManager/LeanTool).
+**Update 12/1:** Second [progress report](https://gasstationmanager.github.io/ai/2024/11/29/progress2.html), with initial announcement of [LeanTool](https://github.com/GasStationManager/LeanTool). **2/13:** [LeanTool progress report and roadmap](https://gasstationmanager.github.io/ai/2025/02/13/leantool.html).
 
 **Update 11/19:** First [progress report](https://gasstationmanager.github.io/ai/2024/11/19/progress1.html).
 
@@ -21,6 +21,9 @@ categories: AI
 **Quick Links to GitHub Repos:** [Arena](https://github.com/GasStationManager/CodeProofTheArena) / [Benchmark](https://github.com/GasStationManager/CodeProofBenchmark) / [Formalize](https://github.com/GasStationManager/FormalizeWithTest) / [LeanTool](https://github.com/GasStationManager/LeanTool) / [WakingUp](https://github.com/GasStationManager/WakingUp)
 
 ---
+
+* Do not remove this line (it will not be displayed)
+{:toc}
 
 # Preface
 

@@ -32,7 +32,7 @@ I made a simple utility [LeanTool](https://github.com/GasStationManager/LeanTool
 With this utility, we are able to run the LLM's code in Lean to check for syntax errors, and provide feedback to allow the LLM to fix the error. 
 
 It is a very simple python script. I am making it a separate repository because it will be a common component for my projects, but also potentially useful for others. There are a few existing works on connecting LLMs with Lean; some are more geared towards helping users in an IDE like VS Code, e.g. Lean Copilot and LLMLean. The design goal of LeanTool is to be flexible: easy to plug into an automated pipeline/agent framework, at the same time also easy to integrate into a chat interface.
-
+(**Update 2/13:** Check out newest developments in  [LeanTool: Progrees and Roadmap](https://gasstationmanager.github.io/ai/2025/02/13/leantool.html).)
 
 
 # Open Problems

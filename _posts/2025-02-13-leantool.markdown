@@ -135,7 +135,7 @@ API proxy server: users' queries are routed through to LeanTool and the LLM, and
 You can run the API proxy server locally; meanwhile a demo of the proxy server is up 
 at [http://www.codeproofarena.com:8800/v1](http://www.codeproofarena.com:8800/v1). 
 Just point your coding assistant to this URL, and use your own API key for the LLM you want to use; 
-see LeanTool [README] for more detailed set up instructions.
+see LeanTool [README](https://github.com/GasStationManager/LeanTool) for more detailed set up instructions.
 
 ### Roadmap
 

@@ -9,6 +9,11 @@ categories: AI
 
 ---
 
+* Do not remove this line (it will not be displayed)
+{:toc}
+
+# 0. Preface
+
 Happy new year! Hope you all had a wonderful holiday.
 
 Since the start of our project, I have been spending much of my effort building up some necessary infrastructure. I feel finally ready to tackle some of the meaty questions first posed in [the proposal](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html). 
