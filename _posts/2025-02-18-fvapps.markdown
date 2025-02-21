@@ -1,0 +1,416 @@
+---
+layout: post
+title:  "Hallucination Detection on FVAPPS"
+date:   2025-02-18 07:30:00 +0000
+categories: AI
+---
+
+(In this post, I look at the newly-released FVAPPS data set, and apply our hallucination detection pipeline to it.
+Progress report #3.6 of our [overall program](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html).)
+
+---
+
+[Formally Verified Automated Programming Progress Standards (FVAPPS)](https://huggingface.co/datasets/quinn-dougherty/fvapps) is a newly released dataset by Quinn Dougherty and Ronak Mehta.
+[Paper here](https://arxiv.org/abs/2502.05714), to appear in [LLM4Code](https://llm4code.github.io/) Workshop at ICSE 2025.
+From its abstract:
+"a benchmark of 4715 samples for writing programs and proving their correctness, the largest formal verification benchmark, including 1083 curated and quality controlled samples."
+
+Similar in format to [CodeProofBenchmark](https://github.com/GasStationManager/CodeProofBenchmark) and the outputs of [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest),
+each problem in FVAPPS contains a description, 
+function signature, and several theorem statements in Lean 4. 
+But this dataset is on a much bigger scale.
+
+So first of all a huge thank you to the authors for making this publicly available. I know it probably took a large amount of effort, and nontrivial amount of API costs, and now we all get to benefit from it.
+
+One can use this dataset to benchmark  the whole process of code generation and proof of correctness; or focus on a part of it. In this post, 
+I am going to focus on hallucination detection, i.e.
+ continue the stream of work started in [previous](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html) [posts](https://gasstationmanager.github.io/ai/2025/02/05/hallucination-followup.html) and applying the pipeline to FVAPPS.
+ To recap, the central question is: 
+ *Can an LLM, with the help of Lean and its features, and with access to formal specifications of the problems, detect its own hallucination and recover from it to produce the correct solution?* 
+See [here](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html#1-experiment-design) for a discussion of motivations on why I am prioritizing my efforts to focus on this task.
+
+In preliminary experiments reported in [previous](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html) [posts](https://gasstationmanager.github.io/ai/2025/02/05/hallucination-followup.html), I showed that a simple approach based on a combination of property-based-testing (PBT) and automated theorem proving (ATP) 
+can be effective at detecting hallucinations. 
+Let us see whether this works on a larger scale dataset of FVAPPS.
+
+In this post I will focus on the detection (i.e. recognition) part of the process. The recovery part is left for the next posts.
+
+The following are research notes on an initial exploration, rather than a final polished report on a completed experiment.
+I am showing them because I think they contain useful information; and to invite suggestions
+and collaboration.
+
+
+
+## 1. Initial Observations
+
+The authors took the existing benchmark APPS (by Hendrycks et al.) that contained coding problem descriptions
+and unit tests  (input-output pairs), and ran it through their formalization and verification [pipeline](https://github.com/quinn-dougherty/fvapps).
+
+
+Here is an example problem with its Lean 4 function signature and specification,
+taken from the README page on [FVAPPS huggingface](https://huggingface.co/datasets/quinn-dougherty/fvapps): 
+
+```
+/--
+Now elections are held in Berland and you want to win them. More precisely, you want everyone to vote for you.
+
+There are $n$ voters, and two ways to convince each of them to vote for you. The first way to convince the $i$-th voter is to pay him $p_i$ coins. The second way is to make $m_i$ other voters vote for you, and the $i$-th voter will vote for free.
+
+Moreover, the process of such voting takes place in several steps. For example, if there are five voters with $m_1 = 1$, $m_2 = 2$, $m_3 = 2$, $m_4 = 4$, $m_5 = 5$, then you can buy the vote of the fifth voter, and eventually everyone will vote for you. Set of people voting for you will change as follows: ${5} \rightarrow {1, 5} \rightarrow {1, 2, 3, 5} \rightarrow {1, 2, 3, 4, 5}$.
+
+Calculate the minimum number of coins you have to spend so that everyone votes for you.
+-/
+def solve_elections (n : Nat) (voters : List (Nat × Nat)) : Nat := sorry
+
+theorem solve_elections_nonnegative (n : Nat) (voters : List (Nat × Nat)) : solve_elections n voters ≥ 0 := sorry
+
+theorem solve_elections_upper_bound (n : Nat) (voters : List (Nat × Nat)) : solve_elections n voters ≤ List.foldl (λ acc (pair : Nat × Nat) => acc + pair.2) 0 voters := sorry
+
+theorem solve_elections_zero_votes (n : Nat) (voters : List (Nat × Nat)) : (List.all voters (λ pair => pair.1 = 0)) → solve_elections n voters = 0 := sorry
+
+theorem solve_elections_single_zero_vote : solve_elections 1 [(0, 5)] = 0 := sorry
+
+/--
+info: 8
+-/
+#guard_msgs in
+#eval solve_elections 3 [(1, 5), (2, 10), (2, 8)]
+
+/--
+info: 0
+-/
+#guard_msgs in
+#eval solve_elections 7 [(0, 1), (3, 1), (1, 1), (6, 1), (1, 1), (4, 1), (4, 1)]
+
+/--
+info: 7
+-/
+#guard_msgs in
+#eval solve_elections 6 [(2, 6), (2, 3), (2, 8), (2, 7), (4, 4), (5, 5)]
+
+```
+
+Looking at the theorem statements, one observation:
+these are properties that a correct solution to `solve_elections` should satisfy,
+but they do not provide a complete specification of the requirements of the problem.
+(Exercise for the reader: come up with an implementation of solve_elections that satisfy
+the theorem statements but not the unit tests.) The situation is similar for a few other FVAPPS instances I looked at.
+
+And perhaps they were not designed to be complete. The FVAPPs pipeline asks an LLM (Sonnet 3.5) to create property-based tests, first in Python, then translates them to Lean theorem statements.
+[These look like the prompts used.](https://github.com/quinn-dougherty/fvapps/blob/master/src/scripts/config.py)
+These theorem statements can still be very useful without needing to be complete specifications.
+
+What if we want a complete specification? We could specifically ask the LLM to provide a complete specificaiton (as I did in [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest)). But would the outputted specifications be really complete? I did not check in the FormalizeWithTest experiment. Can one verify the completeness of a specification in an automated fashion, perhaps with the help of the test cases? I have some thoughts on that, but let's leave it for a future post.
+
+For now: what does this mean for our task at hand, hallucination detection?
+- We can certainly still apply our PBT-based pipeline. This is great, and worth keeping in mind: 
+PBT does not require the specifications to be complete.
+- An advantage for FVAPPS specs: they are very easily checkable. (Which is to be expected since thery were translated from property tests in Python.)
+So one can directly apply `plausible` to the theorem statements which will then generate random inputs and test them. (FVAPPS used `plausible` for the verification portion of its pipeline; more discussion below.)
+Whereas for the (supposedly) complete specifications outputted by [FormalizeWitTest](https://github.com/GasStationManager/FormalizeWithTest)
+(or human-written in the case of [CodeProofBenchmark](https://github.com/GasStationManager/CodeProofBenchmark)),
+the specs are often more complex and not directly testable via `plausible`.
+- On the other hand, because these specs might not be complete, there could be solutions that pass the specs but are wrong. In other words, we might not be able to detect certain hallucinations with these specs.
+- Ultimately, it might be useful to have multiple *layers* of specs: more easily checkable specs that can help catch the "simple" hallucinations, and then progressing until the final, complete specification. These may be useful for the proving side as well: the easier-to-check specs are also likely to be easier to prove. 
+
+### Verification
+
+FVAPPS has identified 1083 samples as "Guarded and Plausible". These are problem instances Where
+- Sonnet 3.5 was able to provide a syntactically valid solution that passed the unit tests
+- Given Sonnet's solution, trying `plausible` on the theorem statements resulted in no counterexamples found.
+
+The rationale is that for these problems we would have high confidence that the specs are faithful
+to the original problem, because of this agreement between the unit tests and the theorem statements
+(verified indirectly via Sonnet's solution).
+
+The drawback of this approach is that it requires the LLM to produce a correct solution (correctness as measured by the unit tests).
+That means the resulting `guarded_and_plausible` set 
+are relatively easy problems in terms of implementation (at least to Sonnet). This is fine if the focus is on the task of proving correctness;
+but here, for our purpose of hallucination detection, we would like to find problem instances 
+where LLMs are having trouble producing correct solutions.
+
+One answer is provided by the verification stage of [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest): 
+we can directly verify the agreement between unit tests and specifications,
+without needing to generate a solution. Basically: plug the input-output values 
+from the unit tests into the theorem statements, and try to prove / disprove the resulting statements using automated theorem proving tools.
+Intuitively, we don't need to produce a solution because the input-output values from unit tests
+can already act as a surrogate for a correct solution, and that is sufficient for our purpose
+of verifying the generated specs.
+
+Applied to FVAPPS, we can go beyond the `guarded_and_plausible` set, 
+and apply this verification stage to other problems without needing a valid solution provided by Sonnet. This will result in a larger set of verified problem formalizations, and importantly
+ problem instances that are more challenging for the current LLMs.
+
+But for now, let's stick with the `guarded_and_plausible` set; even though Sonnet has solved them,
+we can try other LLMs on these problems.
+In this initial experiment, I tried GPT 4o and Deepseek v3 as we did in our previous posts on hallucination detection.
+
+## 2. Preprocessing
+
+- `guarded_and_plausible` set: 1083 instances
+- Filtering to remove instances with empty unit tests: 869 instances left
+- some further preprocessing to adapt the format to our existing pipeline at [WakingUp](https://github.com/GasStationManager/WakingUp)
+
+## 3. GPT 4o 
+
+Please see [here](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html#1-experiment-design) for an overview of our hallucination detection and recovery pipeline.
+Applying it to GPT 4o on the 869 instances from the FVAPPS set, here is a summary of the results:
+- Code-only mode: I stopped after 391 instances were processed, as the API costs were going up.
+- In 60 instances, GPT 4o outputted a solution that has valid syntax but failed the unit tests.
+- To recap: here we are assuming that the unit tests are hidden. So without access to the unit tests, can we detect that GPT 4o's solution is wrong?
+- our property-based-testing script `pbt.py` is adapted to be able to process the FVAPPS specs.
+To recap, it has two approaches: one is directly trying `plausible`; another is to generate random inputs using the Plausible library but then proving/disproving the resulting statements using automated theorem proving. 
+For FVAPPS, we try `plausible` directly; since the FVAPPS verification pipeline has already applied `plausible` (with Sonnet's correct solution), so we know `plausible` is likely to work.
+
+- `plausible` was able to find counterexamples in 37 problem instances (out of the 60).
+
+
+### Example: 0001 solve_max_diagonal_moves
+
+One problem instance that GPT 4o's solution failed the unit tests on is the following (ID 0001 in the dataset).
+```
+Mikhail walks on a Cartesian plane. He starts at the point $(0, 0)$, and in one move he can go to any of eight adjacent points. For example, if Mikhail is currently at the point $(0, 0)$, he can go to any of the following points in one move:   $(1, 0)$;  $(1, 1)$;  $(0, 1)$;  $(-1, 1)$;  $(-1, 0)$;  $(-1, -1)$;  $(0, -1)$;  $(1, -1)$. 
+
+If Mikhail goes from the point $(x1, y1)$ to the point $(x2, y2)$ in one move, and $x1 \ne x2$ and $y1 \ne y2$, then such a move is called a diagonal move.
+
+Mikhail has $q$ queries. For the $i$-th query Mikhail's target is to go to the point $(n_i, m_i)$ from the point $(0, 0)$ in exactly $k_i$ moves. Among all possible movements he want to choose one with the maximum number of diagonal moves. Your task is to find the maximum number of diagonal moves or find that it is impossible to go from the point $(0, 0)$ to the point $(n_i, m_i)$ in $k_i$ moves.
+
+Note that Mikhail can visit any point any number of times (even the destination point!).
+
+
+-----Input-----
+
+The first line of the input contains one integer $q$ ($1 \le q \le 10^4$) — the number of queries.
+
+Then $q$ lines follow. The $i$-th of these $q$ lines contains three integers $n_i$, $m_i$ and $k_i$ ($1 \le n_i, m_i, k_i \le 10^{18}$) — $x$-coordinate of the destination point of the query, $y$-coordinate of the destination point of the query and the number of moves in the query, correspondingly.
+
+
+-----Output-----
+
+Print $q$ integers. The $i$-th integer should be equal to -1 if Mikhail cannot go from the point $(0, 0)$ to the point $(n_i, m_i)$ in exactly $k_i$ moves described above. Otherwise the $i$-th integer should be equal to the the maximum number of diagonal moves among all possible movements.
+
+
+-----Example-----
+Input
+3
+2 2 3
+4 3 7
+10 1 9
+
+Output
+1
+6
+-1
+
+
+
+-----Note-----
+
+One of the possible answers to the first test case: $(0, 0) \to (1, 0) \to (1, 1) \to (2, 2)$.
+
+One of the possible answers to the second test case: $(0, 0) \to (0, 1) \to (1, 2) \to (0, 3) \to (1, 4) \to (2, 3) \to (3, 2) \to (4, 3)$.
+
+In the third test case Mikhail cannot reach the point $(10, 1)$ in 9 moves.
+```
+
+Here is GPT 4o's solution:
+```
+def solve_max_diagonal_moves (n m k : Int) : Int :=
+  let maxCoord := max n m
+  let minCoord := min n m
+  let sumCoords := n + m
+  if k < maxCoord then
+    -1
+  else if (k % 2) ≠ (sumCoords % 2) then
+    -1
+  else
+    minCoord + (k - sumCoords) / 2
+```
+
+The specs (from FVAPPS) are
+```
+def abs (n : Int) : Int :=
+  if n ≥ 0 then n else -n
+
+theorem result_bound (n m k : Int) (h: -1000 <= n ∧ n <= 1000) (h2: -1000 <= m ∧ m <= 1000) (h3: 0 <= k ∧ k <= 2000) :
+  let r := solve_max_diagonal_moves n m k
+  r = -1 ∨ r ≤ k := sorry
+
+theorem result_parity (n m k : Int) (h: -1000 <= n ∧ n <= 1000) (h2: -1000 <= m ∧ m <= 1000) (h3: 0 <= k ∧ k <= 2000) :
+  let r := solve_max_diagonal_moves n m k
+  let max_dist := max (abs n) (abs m)
+  r ≠ -1 → (r % 2 = max_dist % 2 ∨ r % 2 = (max_dist - 1) % 2) := sorry
+
+theorem insufficient_moves (n : Int) (h: 1 <= n ∧ n <= 1000) :
+  let k := abs n - 1
+  solve_max_diagonal_moves n n k = -1 := sorry
+
+theorem symmetry (n m : Int) (h: -1000 <= n ∧ n <= 1000) (h2: -1000 <= m ∧ m <= 1000) :
+  let k := max (abs n) (abs m) * 2
+  let r1 := solve_max_diagonal_moves n m k
+  let r2 := solve_max_diagonal_moves (-n) m k
+  let r3 := solve_max_diagonal_moves n (-m) k
+  let r4 := solve_max_diagonal_moves (-n) (-m) k
+  r1 = r2 ∧ r2 = r3 ∧ r3 = r4 := sorry
+```
+
+Running our PBT script on GPT 4o's solution, it flagged that it failed the last theorem statement:
+```
+Result of running plausible on the theorem statement theorem symmetry (n m : Int) (h: -1000 <= n ∧ n <= 1000) (h2: -1000 <= m ∧ m <= 1000) :
+  let k := max (abs n) (abs m) * 2
+  let r1 := solve_max_diagonal_moves n m k
+  let r2 := solve_max_diagonal_moves (-n) m k
+  let r3 := solve_max_diagonal_moves n (-m) k
+  let r4 := solve_max_diagonal_moves (-n) (-m) k
+  r1 = r2 ∧ r2 = r3 ∧ r3 = r4 := :
+Lean script failed: /var/tmp/tmpssp7zjat.lean:26:2: error: 
+===================
+Found a counter-example!
+n := -1
+m := 1
+guard: -1000 ≤ -1 ∧ -1 ≤ 1000
+guard: -1000 ≤ 1 ∧ 1 ≤ 1000
+issue: 0 = 1 does not hold
+(3 shrinks)
+-------------------
+```
+
+So what happened? 
+GPT 4o's solution was incorrect, as evidenced by it failing the unit tests; but
+the specific issue that PBT caught was something different:
+This is an example where the generated spec is *more* strict than what the problem description (and unit tests) requires.
+This particular theorem statement is saying that the function should be invariant
+with respect to sign changes in the first two input arguments.
+Looking at the description, while it is reasonable to expect that a solution should have this
+kind of symmetry property, the Input section of the description did specify 
+that all input arguments will be positive integers. So:
+- it is not GPT 4o's fault that it failed this particular spec, notwithstanding its hallucination in other aspects of the solution.
+- still, it is good that this got flagged; we need to refine the description and/or the spec to make sure they match.
+A couple of options here: restrict the inputs to be positive in the specs, as preconditions in the theorem statements.
+Or modify the description to allow negative inputs and enforce symmetry, and extend unit tests to cover.
+A third option is to simply remove the theorem statement `symmetry`. 
+Then whatever a solution does with negative inputs would not violate the description as stated; and 
+not fail the unit tests since they don't cover negative inputs, but 
+this behavior may be surprising an unintended.
+
+In general, this can happen when there is a part of the input space that the description underspecify
+the intended behavior and the unit tests do not cover.
+
+### Example: 0013 calc_min_days
+
+Here is an example where the hallucination detection worked as intended.
+Problem description:
+```
+Your company was appointed to lay new asphalt on the highway of length $n$. You know that every day you can either repair one unit of the highway (lay new asphal
+t over one unit of the highway) or skip repairing.
+
+Skipping the repair is necessary because of the climate. The climate in your region is periodical: there are $g$ days when the weather is good and if you lay new
+ asphalt these days it becomes high-quality pavement; after that, the weather during the next $b$ days is bad, and if you lay new asphalt these days it becomes l
+ow-quality pavement; again $g$ good days, $b$ bad days and so on.
+
+You can be sure that you start repairing at the start of a good season, in other words, days $1, 2, \dots, g$ are good.
+
+You don't really care about the quality of the highway, you just want to make sure that at least half of the highway will have high-quality pavement. For example
+, if the $n = 5$ then at least $3$ units of the highway should have high quality; if $n = 4$ then at least $2$ units should have high quality.
+
+What is the minimum number of days is needed to finish the repair of the whole highway?
+
+
+-----Input-----
+
+The first line contains a single integer $T$ ($1 \le T \le 10^4$) — the number of test cases.
+
+Next $T$ lines contain test cases — one per line. Each line contains three integers $n$, $g$ and $b$ ($1 \le n, g, b \le 10^9$) — the length of the highway and the number of good and bad days respectively.
+
+
+-----Output-----
+
+Print $T$ integers — one per test case. For each test case, print the minimum number of days required to repair the whole highway if at least half of it should have high quality.
+
+
+-----Example-----
+Input
+3
+5 1 1
+8 10 10
+1000000 1 1000000
+
+Output
+5
+8
+499999500000
+
+
+
+-----Note-----
+
+In the first test case, you can just lay new asphalt each day, since days $1, 3, 5$ are good.
+
+In the second test case, you can also lay new asphalt each day, since days $1$-$8$ are good.
+```
+
+GPT 4o's solution:
+```
+def calc_min_days (n g b : Nat) : Nat :=
+  let min_high_quality := (n + 1) / 2
+  let full_cycles := min_high_quality / g
+  let remaining_good_days := min_high_quality % g
+  let total_days := full_cycles * (g + b) + if remaining_good_days > 0 then remaining_good_days else 0
+  if total_days < n then n else total_days
+```
+Specs from FVAPPS:
+```
+theorem result_at_least_n {n g b : Nat} (hn : n > 0) (hg : g > 0) (hb : b > 0) :
+  calc_min_days n g b ≥ n := 
+  sorry
+
+theorem result_at_least_high_quality {n g b : Nat} (hn : n > 0) (hg : g > 0) (hb : b > 0) :
+  calc_min_days n g b ≥ (n + 1) / 2 :=
+  sorry
+
+theorem zero_bad_weather_equals_n {n g : Nat} (hn : n > 0) (hg : g > 0) :
+  calc_min_days n g 0 = n :=
+  sorry
+
+theorem single_day_road {n : Nat} (hn : n > 0) :
+  calc_min_days 1 n n = 1 :=
+  sorry
+```
+Our PBT script (which calls `plausible`) was able to identify that the solution 
+failed the following theorem statement:
+```
+Result of running plausible on the theorem statement theorem single_day_road {n : Nat} (hn : n > 0) :
+  calc_min_days 1 n n = 1 :=
+  :
+Lean script failed: /var/tmp/tmp8wukygzp.lean:16:2: error: 
+===================
+Found a counter-example!
+n := 1
+guard: 0 < 1
+issue: 2 = 1 does not hold
+(0 shrinks)
+-------------------
+```
+The theorem statment says that when the inputs are of the form `1 n n`, the output should be 1.
+On the other hand, GPT 4o's solution, given input `1 1 1`, returned 2.
+So we have successfully detected hallucination.
+
+## 4. Deepseek v3
+(Currently work in progress; will be updated)
+
+- Code-only mode: stopped after 783 instances processed, as the lean executions were taking a long time.
+- In 65 instances, Deepseek's solution were syntactically valid but failed unit tests.
+
+
+## 5. Takeaways / Future work
+(to be updated)
+- Our hallucination detection pipeline was able to work on a significant scale on the FVAPPS `guarded_and_plausible` set;
+detecting a large portion of hallucinations.
+- Not all hallucinations were detected. In some sense to be expected because the specs might not be complete.
+But it could also be that (say) `plausible` failed somehow. Or some bugs in my code.
+I would like to look into the individual examples and identify the causes.
+- Next step: adapt our hallucination detection script (`pbt.py`) as a plugin for LeanTool.
+- As mentioned above, a fruitful direction is to adapt the verification stage of FormalizeWithTest
+to the other parts of FVAPPS, to get verified instances of the harder problems.
+
+
