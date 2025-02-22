@@ -401,6 +401,109 @@ So we have successfully detected hallucination.
 - Code-only mode: stopped after 783 instances processed, as the lean executions were taking a long time.
 - In 65 instances, Deepseek's solution were syntactically valid but failed unit tests.
 
+### Example: 0142 find_longest_uncommon_subseq
+
+Here is an example where Deepseek hallucinated but PBT with the specs were not able to detect the hallucination.
+Description:
+```
+Given a list of strings, you need to find the longest uncommon subsequence among them. The longest uncommon subsequence is defined as the longest subsequence of one of these strings and this subsequence should not be any subsequence of the other strings.
+
+
+
+A subsequence is a sequence that can be derived from one sequence by deleting some characters without changing the order of the remaining elements. Trivially, any string is a subsequence of itself and an empty string is a subsequence of any string.
+
+
+
+The input will be a list of strings, and the output needs to be the length of the longest uncommon subsequence. If the longest uncommon subsequence doesn't exist, return -1.
+
+
+Example 1:
+
+Input: "aba", "cdc", "eae"
+Output: 3
+
+
+
+Note:
+
+All the given strings' lengths will not exceed 10.
+The length of the given list will be in the range of [2, 50].
+```
+Deepseek's solution:
+```
+import Mathlib.Data.List.Basic
+
+def is_subseq (s t : String) : Bool :=
+  let rec helper (s_chars t_chars : List Char) : Bool :=
+    match s_chars, t_chars with
+    | [], _ => true
+    | _, [] => false
+    | s_head :: s_tail, t_head :: t_tail =>
+      if s_head == t_head then
+        helper s_tail t_tail
+      else
+        helper s_chars t_tail
+  helper s.toList t.toList
+
+def find_longest_uncommon_subseq (strs : List String) : Int :=
+  let candidates := strs.filter (λ s =>
+    strs.all (λ t => s == t || !is_subseq s t))
+  if candidates.isEmpty then
+    -1
+  else
+    candidates.foldl (λ max_len s => max max_len s.length) 0
+
+-- Example usage:
+#eval find_longest_uncommon_subseq ["aba", "cdc", "eae"]  -- Output: 3
+```
+The unit tests were:
+```
+/--
+info: 3
+-/
+#guard_msgs in
+#eval find_longest_uncommon_subseq ["aba", "cdc", "eae"]
+
+/--
+info: -1
+-/
+#guard_msgs in
+#eval find_longest_uncommon_subseq ["aaa", "aaa", "aa"]
+
+/--
+info: -1
+-/
+#guard_msgs in
+#eval find_longest_uncommon_subseq ["aabb", "aabb", "ab"]
+```
+
+Specs from FVAPPS:
+```
+theorem find_longest_uncommon_subseq_output_type_and_range
+  (strs : List String)
+  (h : strs.length > 0) :
+  let result := find_longest_uncommon_subseq strs
+  result = -1 ∨ result ≥ 0 := sorry
+
+theorem find_longest_uncommon_subseq_bounded_by_max_length
+  (strs : List String)
+  (h : strs.length > 0) :
+  find_longest_uncommon_subseq strs ≤ (strs.map String.length).maximum?.getD 0 := sorry
+
+
+
+theorem find_longest_uncommon_subseq_single_string
+  (s : String)
+  (strs : List String)
+  (h : strs = [s]) :
+  find_longest_uncommon_subseq strs = s.length := sorry
+```
+Exercise for the reader: can you see why Deepseek's solution is wrong?
+
+In this case, Deepseek's solution failed the unit tests but PBT was not able to find a counterexample with the specs.
+This is because the specs in this case were not a complete specification of the problem's requirements.
+Deepseek's solution satisfies FVAPPS's specs but was still wrong for the problem.
+
 
 ## 5. Takeaways / Future work
 (to be updated)
