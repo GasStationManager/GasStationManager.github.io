@@ -521,6 +521,38 @@ In this case, Deepseek's solution failed the unit tests but PBT was not able to 
 This is because the specs in this case were not a complete specification of the problem's requirements.
 Deepseek's solution satisfies FVAPPS's specs but was still wrong for the problem.
 
+### Example: 0459
+Here is an example of a successful hallucination detection where the hallucination results in a potential run-time error rather than a wrong answer.
+
+Description: omitted for brevity. 
+
+Deepseek v3's solution:
+```
+import Std.Data.HashMap
+
+def character_replacement (s : String) (k : Nat) : Nat :=
+  let rec helper (left : Nat) (right : Nat) (maxCount : Nat) (freq : Std.HashMap Char Nat) (s : List Char) : Nat :=
+    match s with
+    | [] => right - left
+    | c :: cs =>
+      let newFreq := freq.insert c (freq.findD c 0 + 1)
+      let newMaxCount := max maxCount (newFreq.findD c 0)
+      if (right - left + 1) - newMaxCount > k then
+        let leftChar := s.get! left
+        let updatedFreq := newFreq.insert leftChar (newFreq.findD leftChar 0 - 1)
+        helper (left + 1) (right + 1) newMaxCount updatedFreq cs
+      else
+        helper left (right + 1) newMaxCount newFreq cs
+  helper 0 0 0 Std.HashMap.empty s.toList
+
+-- Example usage:
+#eval character_replacement "ABAB" 2 -- Output: 4
+#eval character_replacement "AABABBA" 1 -- Output: 4
+```
+
+Running PBT caught a run-time error (`PANIC`)
+at  `s.get! left`, i.e. an List index out of bounds error.
+
 
 ## 5. Takeaways / Future work
 (to be updated)
