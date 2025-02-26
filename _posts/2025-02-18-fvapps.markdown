@@ -395,11 +395,28 @@ The theorem statment says that when the inputs are of the form `1 n n`, the outp
 On the other hand, GPT 4o's solution, given input `1 1 1`, returned 2.
 So we have successfully detected hallucination.
 
+We won't delve into correction too much in this post, but here is a corrected solution 
+by Gemini-2-flash-exp, with the help of LeanTool and using [this prompt](https://github.com/GasStationManager/WakingUp/blob/main/pbt_recog_analysis.py).
+```
+def calc_min_days (n g b : Nat) : Nat :=
+  let min_good := (n + 1) / 2
+  if g ≥ n then
+    n
+  else
+    let cycles := (min_good + g - 1) / g
+    let days := cycles * g + (cycles - 1) * b
+    Nat.max n days
+```
+
 ## 4. Deepseek v3
 (Currently work in progress; will be updated)
 
 - Code-only mode: stopped after 783 instances processed, as the lean executions were taking a long time.
 - In 65 instances, Deepseek's solution were syntactically valid but failed unit tests.
+- PBT: I stopped after 58 instances (out of 65) were processed, as the execution was taking too long.
+- So, computational efficiency of solutions. Definitely an important topic, which we will do a deep dive later on. For now: we can set a time limit, that a good solution, given inputs in the range specified in the problem description, must finish under. 
+Then, if a candidate solution ran out of time during PBT, this is evidence that it is less efficient that what was required by the problem.
+- In 29 (out of 58) instances, PBT found a counter-example, i.e. hallucination was detected.
 
 ### Example: 0142 find_longest_uncommon_subseq
 
