@@ -34,7 +34,7 @@ I am writing this mainly to the open source community. Why? The insights and ide
 By publishing this essay, and [open-sourcing what I have done so far](https://github.com/GasStationManager), I am calling on the open source community to start thinking about these ideas, if you haven't already. If you are already working in this direction, it may be beneficial to coordinate resources. Even then, we will be playing catch up. But hopefully it will be a more level playing field.
 
 Why do I want to help the open source community? I do subscribe to the stance that a single company (no matter which one) having all the power in the world is perhaps undesirable. 
-Furthermore, as the title suggests, what I'm proposing below has an important AI Safety component. Indeed, if we are going to be able to produce coding AIs with superhuman ability, AI Safety has to be taken seriously. And for that to work requires buy-in from everyone. I want the open source community to have a seat at the table for that discussion. 
+Furthermore, as the title suggests, what I'm proposing below has an important AI Safety component. Indeed, if we are going to be able to build coding AIs with superhuman ability, AI Safety has to be taken seriously. And for that to work requires buy-in from everyone. I want the open source community to have a seat at the table for that discussion. 
 
 # 1. The Question 
 
@@ -91,7 +91,7 @@ solve larger-scale coding tasks. These more complex tasks typically require solv
 This is of course an active area of research. The most promising current approaches focus on scaling up 
 inference-time compute (a.k.a. "System 2", reasoning), either via some external scaffolding or by training the behavior
 into the model via reinforcement learning. 
-The intuition is that by spending more tokens to think, the AI can produe a better quality output.
+The intuition is that by spending more tokens to think, the AI can produce a better quality output.
 The extra tokens are used to reason step by step (chain-of-thought), to check over the output for mistakes (reflection), and/or to systematically examine candidate options (search, tree-of-thought).
 So even if the base model could occasionally produce hallucinated output, 
 it could be caught and corrected at inference time.
@@ -323,7 +323,7 @@ They have the compute, so that their teams can quickly experiment and iterate on
 On the other hand, I believe that an open source collaborative effort can also be
 successful, by leveraging the advantages of open source. 
 Specifically, I propose below a community effort to construct and curate an open source data set,
-aiming to be exclusivly used to train open-source models.
+aiming to be exclusively used to train open-source models.
 Also, I believe we have an advantange in the sheer number of brilliant minds and the diversity of expertise. By trying diverse approaches in parallel, and sharing results, we can make quick progress
 even though individually we have less resources available to us.
 
@@ -539,7 +539,7 @@ I believe an essential part of the solution is Curriculum Learning.
 By progressing through a curriculum of easier to harder problems, earlier topics provide strong foundations so the student (AI) is ready for the subsequent topics.
 The curriculum would be literally a curriculum of undergraduate computer science education (with proofs):
 
-- Basics. How do write a function. Prove statements about a function. 
+- Basics. How to write a function. Prove statements about a function. 
 - Write recursive functions. Prove statements about recursive functions via induction
 - Data structure and algorithms. Proofs of both correctness and efficiency
 - Depending on need, go into other areas of computer science that has a rigorous foundation. E.g.,  AI topics like constraint satisfaction, Markov Decision Processes, learning theory. Linear algebra, linear programming, convex optimization. Parallel algorithms, cryptography...
@@ -606,7 +606,7 @@ With this purpose in mind, I would like to set the data license of the site to b
 the data from this site, and you would like to release/distribute/productize the model,
 you are obligated to at least make the weights of the model freely available (i.e. open-weights model). I am not an expert in data licensing; I am not aware of whether an existing license matches what we need. Perhaps a [Creative Commons](https://en.wikipedia.org/wiki/Creative_Commons_license) license like CC-BY-SA or CC-BY-NC-SA, if the Share-Alike (SA) clause also covers models trained on the data. Suggestions are welcome.
 
-On the other hand, if you would like to contribute data to the website, and your data is generated base on some existing data source and/or LLM model output, you want to make sure the license
+On the other hand, if you would like to contribute data to the website, and your data is generated based on some existing data source and/or LLM model output, you want to make sure the license
 of the existing data source / LLM model is compatible with you open-sourcing your data this way. 
 
 The GitHub repository contains the source code but the website is not yet officially hosted anywhere. *(Update 11/13: A [Demo site](http://www.codeproofarena.com:8000) is up.)* My hope is for someone from the open source community to fork the repo and host the website. Whoever hosts the website can decide on the data license for the site (and be prepared to enforce it). Given the license, people can decide whether to contribute data to the site.

@@ -10,6 +10,8 @@ Progress report #3.6 of our [overall program](https://gasstationmanager.github.i
 
 ---
 
+## Preface
+
 [Formally Verified Automated Programming Progress Standards (FVAPPS)](https://huggingface.co/datasets/quinn-dougherty/fvapps) is a newly released dataset by Quinn Dougherty and Ronak Mehta.
 [Paper here](https://arxiv.org/abs/2502.05714), to appear in [LLM4Code](https://llm4code.github.io/) Workshop at ICSE 2025.
 From its abstract:
