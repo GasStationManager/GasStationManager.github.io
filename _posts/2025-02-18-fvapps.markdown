@@ -409,7 +409,6 @@ def calc_min_days (n g b : Nat) : Nat :=
 ```
 
 ## 4. Deepseek v3
-(Currently work in progress; will be updated)
 
 - Code-only mode: stopped after 783 instances processed, as the lean executions were taking a long time.
 - In 65 instances, Deepseek's solution were syntactically valid but failed unit tests.
@@ -524,7 +523,7 @@ Deepseek's solution satisfies FVAPPS's specs but was still wrong for the problem
 ### Example: 0459
 Here is an example of a successful hallucination detection where the hallucination results in a potential run-time error rather than a wrong answer.
 
-Description: omitted for brevity. 
+Description: omitted for brevity. Interested readers can check problem 0459 in the FVAPPS dataset.
 
 Deepseek v3's solution:
 ```
@@ -551,13 +550,13 @@ def character_replacement (s : String) (k : Nat) : Nat :=
 ```
 
 Running PBT caught a run-time error (`PANIC`)
-at  `s.get! left`, i.e. an List index out of bounds error.
+at  `s.get! left`, i.e. a List index out of bounds error.
 
 
 ## 5. Takeaways / Future work
-(to be updated)
-- Our hallucination detection pipeline was able to work on a significant scale on the FVAPPS `guarded_and_plausible` set;
-detecting a large portion of hallucinations.
+
+- Our hallucination detection pipeline was able to work on a significant scale on the FVAPPS `guarded_and_plausible` set,
+detecting a large portion of hallucinations by GPT 4o and Deepseek v3.
 - Not all hallucinations were detected. In some sense to be expected because the specs might not be complete.
 But it could also be that (say) `plausible` failed somehow. Or some bugs in my code.
 I would like to look into the individual examples and identify the causes.

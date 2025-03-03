@@ -21,7 +21,7 @@
 title: Lean4AI @ Gas Station Secret Lab
 email: GasStationCodeManager@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Using iteractive theorem provers like Lean to tackle the great challenges of generative AI: Safety and Hallucination.
+  Using interactive theorem provers like Lean to tackle the great challenges of generative AI: Safety and Hallucination.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  GasStationManager
