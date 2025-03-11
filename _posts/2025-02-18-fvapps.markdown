@@ -415,7 +415,7 @@ def calc_min_days (n g b : Nat) : Nat :=
 - Code-only mode: stopped after 783 instances processed, as the lean executions were taking a long time.
 - In 65 instances, Deepseek's solution were syntactically valid but failed unit tests.
 - PBT: I stopped after 58 instances (out of 65) were processed, as the execution was taking too long.
-- So, computational efficiency of solutions. Definitely an important topic, which we will do a deep dive later on. For now: we can set a time limit, that a good solution, given inputs in the range specified in the problem description, must finish under. 
+- So, computational efficiency of solutions. Definitely an important topic, which we will do a deep dive later on (for a sneak peek, try [this challenge](http://www.codeproofarena.com:8000/challenges/48)). For now: we can set a time limit, that a good solution, given inputs in the range specified in the problem description, must finish under. 
 Then, if a candidate solution ran out of time during PBT, this is evidence that it is less efficient that what was required by the problem.
 - In 29 (out of 58) instances, PBT found a counter-example, i.e. hallucination was detected.
 
