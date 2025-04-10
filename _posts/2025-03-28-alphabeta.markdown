@@ -30,7 +30,7 @@ I would like to develop further an idea I mentioned briefly in a [previous post]
 
 This is in the context of our [hallucination detection and recovery](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html) effort. At a high level, our goal is to output correct code. Our challenge is that LLMs hallucinate. We want to leverage formal specs and ITPs as tools to detect and recover from hallucinations.
 
-In a series of posts ([1](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html),[2](https://gasstationmanager.github.io/ai/2025/02/05/hallucination-followup.html), [3](https://gasstationmanager.github.io/ai/2025/02/18/fvapps.html)), we developed tools that combined property-based testing (PBT) and automated theorem proving (ATP), and showed that they are effective at detecting the presence of hallucinations.
+In a series of posts ([1](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html), [2](https://gasstationmanager.github.io/ai/2025/02/05/hallucination-followup.html), [3](https://gasstationmanager.github.io/ai/2025/02/18/fvapps.html)), we developed tools that combined property-based testing (PBT) and automated theorem proving (ATP), and showed that they are effective at detecting the presence of hallucinations.
 
 Going from recognition (detecting the presense) to locating and fixing the bug can be nontrivial, especially as the tasks become more complex.
 At a high level, this can be seen as a credit assignment problem.
@@ -203,7 +203,7 @@ For our current task, creating examples allows us to check that our GameTree typ
 
 
 ### Implementation
-Let's dive into the implementation. The first natural thing to do is to split into cases on the input GameTree.
+Let's dive into the implementation. The first natural thing to do is to split into cases on the input GameTree. We want to mostly follow the recursive structure of minimax, deviating only when necessary. Experience suggests that this will make proofs easier.
 ```
 def alphabeta (g: GameTree maxV) (alpha beta: Int)
 (pa: alpha >= - maxV.val) (pb: beta<=maxV.val)
