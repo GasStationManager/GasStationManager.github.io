@@ -38,14 +38,18 @@ At a high level, this can be seen as a credit assignment problem.
 We propose the following approach, that draws ideas from both  type-driven and test-driven development. 
 - As in my [previous](https://gasstationmanager.github.io/ai/2024/12/03/memoization1.html) [posts](https://gasstationmanager.github.io/ai/2024/12/09/dp2.html) on programming with dependent types,
 we annotate data with logical properties that the data should satisfy, encoded as type information.
+
 - This includes but is not limited to subtyping the return values of functions with their postconditions.
 
 - This naturally results in proof goals inside of the implementation.  Initially, we can put `sorry`s in place of the required proofs.
 
 - Before attempting the proofs, we want to first ensure that the implementation is correct. We apply property-based testing (PBT) to test whether there are counterexamples to these proof goals
+
 - If counterexample found: we have detected hallucination. So the implmentation of this subgoal is wrong. We either need to fix the implementation so that it satisfies the subgoal, or adjust the subgoal so that it can be satisfied while still sufficient to lead to the final solution,
 or to find a different path towards the solution that no longer invovles this subgoal. 
-- We also test the entire function with PBT
+
+- We also test the entire function with PBT.
+
 - Finally, we have an implementation that we believe to be correct, because the function and its parts have passed PBT.
 
 - We have reached our original goal of outputting correct code. Can we go one step further
@@ -280,7 +284,49 @@ Testing the function with the above example will catch the failed check with err
 
 It may be reasonable to raise an exception after the failed check. Ultimately it boils down to what is more helpful to the LLM.
 
+For the next step, we replace the stub with something closer to being correct. In our case, we are going to recursively call alphabeta on the first child, and inspect the result. 
+This is where the alpha-beta algorithm differs from minimax:
+whereas in minimax all of the children are processed no matter what, 
+in alpha-beta we look at the results for each child, and decide whether to skip the rest 
+of the list of children, i.e. prune.
+
+We create stubs for each of the three cases of the return value of the recursive alphabeta call,
+and guard them with the checks on the extracted proof goals, as before.
+```
+def alphabeta (g: GameTree maxV)(alpha beta: Int)
+(pa: alpha >= - maxV.val) (pb: beta<=maxV.val)
+: IO <| ABResult g alpha beta :=do
+match g with
+|GameTree.terminal x _ _=>return ABResult.value x (by simp[minimax])
+|GameTree.node [] => return ABResult.value (-maxV) (by simp[minimax])
+|GameTree.node (child::tail) =>
+  let r ←   alphabeta child (-beta) (-alpha) (by omega) (by omega)
+  match r with
+  |ABResult.value x prf =>
+    let candidate := -x
+    let checkRes:Bool:=candidate = minimax (GameTree.node (child :: tail))
+    if !checkRes then
+      IO.println "failed check: candidate = minimax (GameTree.node (child :: tail))"
+    return ABResult.value candidate (by sorry)
+  |ABResult.lb prf=>
+    let checkRes:Bool:=alpha ≥ minimax (GameTree.node (child :: tail))
+    if !checkRes then
+      IO.println "failed check: alpha ≥ minimax (GameTree.node (child :: tail))"
+    return ABResult.ub (by sorry)
+  |ABResult.ub prf=>
+    let checkRes:Bool:=beta ≤ minimax (GameTree.node (child :: tail))
+    if !checkRes then
+      IO.println "failed check: beta ≤ minimax (GameTree.node (child :: tail))"
+    return ABResult.lb (by sorry)
+
+def g2:GameTree ⟨ 3, by decide⟩ := GameTree.node [GameTree.terminal 1 (by decide) (by decide), GameTree.terminal 0 (by decide) (by decide)]
+#eval! alphabeta g2 (-3) 3  (by decide) (by decide)
+```
+Testing with the above example, it prints `failed check: candidate = minimax (GameTree.node (child :: tail))`, which correctly catches that the corresponding stub implementation for that case is wrong.
+
+
 ### Next Steps
+
 We can progress further by incrementally implementing more of the function, guarded by property-based tests. But let us leave it for the next installment, when we try it with an LLM.
 
 For now, hopefully you got a flavor of this workflow. Observe that the subgoals and the corresponding tests can be automatically generated. The programmer can focus on implementing the subgoals, and responding to any failed checks.
