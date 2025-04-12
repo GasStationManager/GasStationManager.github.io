@@ -13,14 +13,14 @@ categories: AI
 
 It's been a while since our last update. Progress has slowed down mainly because I got very busy at work. Nevertheless, in this post I'll show a glimpse of an idea I've been developing that I believe can become very potent. Before diving into our main topic, let me mention a couple of other updates.
 
-- **LeanTool with MCP**. Model Context Protocol (MCP) has become a standard for exposing functionalities to the LLM, with adoption by multiple vendors.
+- **LeanTool with MCP**. [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) has become a standard for exposing functionalities to the LLM, with adoption by multiple vendors.
 [LeanTool](https://github.com/GasStationManager/LeanTool) now supports MCP as one of its modes of deployment. 
 How it works: the Lean execution tool (and plugins including load_sorry) is exposed as a MCP tool in a MCP server,
 which apps (like Cursor) can then make available to LLMs to use.
 The main difference with earlier modes of LeanTool as library function and API server 
 is that here the MCP server is just the Lean execution part, so no LLM, and no feedback loop.
 So the app needs to connect to the LLM and manage the  feedback loop.
-Many modern coding assistant apps are capable of doing that. LeanTool's MCP mode has been tested to work with Cursor, Claude Code and Goose. Apparently the upcoming VS Code Insiders edition will have a GitHub Copilot agent mode that also supports MCP.
+Many modern coding assistant apps are capable of doing that. LeanTool's MCP mode has been tested to work with Cursor, Claude Code and Goose. The upcoming VS Code Insiders edition will have a GitHub Copilot agent mode that also supports MCP.
 
 
 ## Property-Based Testing with Dependent Types

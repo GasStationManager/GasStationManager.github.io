@@ -4,11 +4,12 @@ title:  "A Proposal for Safe and Hallucination-free Coding AI"
 date:   2024-11-04 07:30:00 +0000
 categories: AI
 ---
+**Update 3/28:** Fourth [progress report](https://gasstationmanager.github.io/ai/2025/03/28/alphabeta.html), on property-based testing with dependent types.
 
 **Update 1/30:** [A reading guide](https://gasstationmanager.github.io/ai/2025/01/30/lean4ai.html).
 
 **Update 1/22/25:** Third [progress report](https://gasstationmanager.github.io/ai/2025/01/22/hallucination.html), on hallucination detection and recovery. 
-**2/5:** [Followup report](https://gasstationmanager.github.io/ai/2025/02/05/hallucination-followup.html). Code available at the GitHub repo [WakingUp](https://github.com/GasStationManager/WakingUp).
+**2/5:** [Followup report](https://gasstationmanager.github.io/ai/2025/02/05/hallucination-followup.html). Code available at the GitHub repo [WakingUp](https://github.com/GasStationManager/WakingUp). **2/18:** [Followup report](https://gasstationmanager.github.io/ai/2025/02/18/fvapps.html) on applying the pipeline to the FVAPPS dataset.
 
 **Update 12/4:** [A post](https://gasstationmanager.github.io/ai/2024/12/03/memoization1.html) that expands on Project 1 part 3 with a worked example, and initial exploration of teaching it to an AI. **12/9:** [A follow-up post](https://gasstationmanager.github.io/ai/2024/12/09/dp2.html) along the same theme.
 
