@@ -38,7 +38,7 @@ I then prompt Claude to take the extracted goals and turn them into checks.
 
 Now we are ready to continue our adventure!
 
-I started by setting up a branch of LeanTool, that contains our modified PBT script `pbtdp.py`.
+I started by setting up a [branch of LeanTool](https://github.com/GasStationManager/LeanTool/tree/feature-plugin-pbt), that contains our modified PBT script `pbtdp.py`.
 Set up Claude Code to [utilize LeanTool as a MCP server.](https://github.com/GasStationManager/LeanTool?tab=readme-ov-file#example-set-up-with-claude-code)
 Made a `CLAUDE.md` file with some basic instructions on the availability and basic usage of LeanTool and `pbtdp.py`.
 
@@ -232,3 +232,15 @@ match g with
           IO.println "failed check: alpha ≥ minimax (GameTree.node (child :: tail))"
         return ABResult.ub (by sorry)
 ```
+
+Takeaways:
+- We now have a working prototype of our framework that supports property-based testing with depedent types, consisting of `pbtdp.py`, LeanTool, and Claude Code. Claude Code could be replaced by another coding assistant to provide the feedback loop, e.g. Goose, Aider, or Cursor. This in turn will allow us to try other LLMs.
+Feel free to play with [LeanTool's branch containing `pbtdp.py`](https://github.com/GasStationManager/LeanTool/tree/feature-plugin-pbt), perhaps try coding your favorite algorithm!
+- A key drawback of our `pbtdp.py` is its slow speed: it is currently not able to generate enough samples to cover all branches while still enabling interactive coding.
+I think the culprit may lie in the auto-generated implementation for the `Repr` type class, and we may need a custom one for our user-defined types like GameTree.
+- I'm pretty new to Claude Code, and I like it so far. Pretty versatile to allow the use of custom tools like `pbtdp.py`. We also did a bit of pair programming to hammer out some kinks in the framework.
+- How did Claude Sonnet 3.7 do in its implementation  of `alphabeta`? Overall it is very capable, but at times over-eager to write the code and less able to follow precisly the instructions. (Which aligns with its general reputation.)
+In particular it just wrote the checks without consulting the results of LeanTool's load_sorry,
+and had to be prompted to actually run LeanTool and fix the inconsistencies. 
+- Next we will try some other models, perhaps ones that are less confident about its knowledge of alphabeta and more likely to follow the workflow.
+- Now that we are (somewhat) confident that Claude's implementation is correct, can we prove the remaining `sorry`s? I tried prompting Claude to do so with the help of LeanTool, but with very limited progress. Looking at the code, we may need to add a precondition of `beta > alpha` to make the proofs go through...
