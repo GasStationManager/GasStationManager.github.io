@@ -266,15 +266,31 @@ After fixing the checks to match the correct goals produced by LeanTool,
 these checks are designed to immediately catch the hallucinations using `pbtdp.py`.
 It just took us a while because we needed to produce enough samples to provide sufficient coverage of all the branches.
 
+## Recovery Attempt
+
+Can Claude recover from its hallucinations given the error messages from `pbtdp.py`?
+This is a few days after the initial session ended, so I had to re-prompt Claude with some relevant context, including
+- my [previous post](https://gasstationmanager.github.io/ai/2025/03/28/alphabeta.html) 
+- [`CLAUDE.md`](https://github.com/GasStationManager/LeanTool/blob/feature-plugin-pbt/CLAUDE.md) which summarizes the workflow and the available tools
+- Claude's Lean implementation above
+- `pbtdp.py`'s error message shown above.
+
+We didn't succeed. Claude initially tried to fix the checks instead of the implementation.
+I had to tell Claude that the checks are correct if they matches the goals LeanTool extracted from the `sorry`s; if there are still failed checks, then the implementation is wrong. 
+Claude admitted that the implementation is wrong, but was not able to come up with sensible fixes.
+Some of the code changes it suggested include calling minimax as part of the `alphabeta` implementation, which defeats the purpose of doing `alphabeta` in the first place. 
+
+These difficulties may be due to some loss of context from the new session, but also 
+Claude may have been better off growing the implementation step by step as suggested in my previous post.
 
 ## Takeaways
 
 - We now have a working prototype of our framework that supports property-based testing with depedent types, consisting of `pbtdp.py`, LeanTool, and Claude Code. Claude Code could be replaced by another coding assistant to provide the feedback loop, e.g. Goose, Aider, or Cursor. This in turn will allow us to try other LLMs.
 Feel free to play with [LeanTool's branch containing `pbtdp.py`](https://github.com/GasStationManager/LeanTool/tree/feature-plugin-pbt), perhaps try coding your favorite algorithm!
-- A key drawback of our `pbtdp.py` is its slow speed: it is currently not able to generate enough samples to cover all branches while still enabling interactive coding.
+- A key drawback of our `pbtdp.py` is its slow speed: it is currently not able to generate enough samples to cover all branches while still enabling interactive coding. (For now, we might get around this by running `pbtdp.py` on a separate command line window for longer.)
 I think the culprit may lie in the auto-generated implementation for the `Repr` type class, and we may need a custom one for our user-defined types like GameTree.
 - I'm pretty new to Claude Code the coding assistant, and I like it so far. Pretty versatile to allow the use of custom tools like `pbtdp.py`. We also did a bit of pair programming to hammer out some kinks in the framework.
 - How did Claude Sonnet 3.7 do in its implementation  of `alphabeta`? Overall it is very capable, but at times over-eager to write the code and less able to follow precisly the instructions. (Which aligns with its general reputation.)
 In particular it just wrote the checks without consulting the results of LeanTool's load_sorry,
 and had to be prompted to actually run LeanTool and fix the inconsistencies. 
-- Next we will try some other models, perhaps ones that are less confident about its knowledge of alphabeta and more likely to follow the workflow.
+- Next we will try some other models, and other coding tasks. Suggestions welcome!
