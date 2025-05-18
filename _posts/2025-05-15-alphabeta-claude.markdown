@@ -131,8 +131,7 @@ Now that we finally have a working `pbtdp.py`, I asked Claude to continue the im
 Claude created a full implementation in one go,  complete with checks guarding each `sorry`, following the style suggested in our previous post. 
 However, when I asked Claude to send the code to LeanTool to get the actual proof goals corresponding to the `sorry`s, and compare against the checks it created, it found out that in 10 of the 12 cases the checks matched the goals from `sorry`s but in 2 cases the checks did not match the goals from `sorry`s. 
 
-I asked Claude to fix those checks to match the goals, and then run `pbtdp.py` on the resulting source file. We were only able to run about 10 samples within Claude's 2 minute execution timeout window. All the samples we tried did pass, but that is not enough to cover the 12 branches of Claude's implementation. I have subsequently run `pbtdp.py` on the command line without time limit, and was able to do more samples and all of those passed.
-
+I asked Claude to fix those checks to match the goals. 
 Here is Claude's implementation of `alphabeta`:
 ```
 def alphabeta (g: GameTree) (alpha beta: Int)
@@ -237,15 +236,45 @@ match g with
         return ABResult.ub (by sorry)
 ```
 
+## Is This Correct?
+
+I asked Claude to run `pbtdp.py` on the resulting source file. We were only able to run about 10 samples within Claude's 2 minute execution timeout window. All the samples we tried did pass, but that is not enough to cover the 12 branches of Claude's implementation. 
+
+What can we do to verify the correctness of this implementation? A couple of options:
+- We can run `pbtdp.py` on the command line without Claude. Withou the time limit, we would be able to do more samples.
+- We can try to provide proofs of the remaining `sorry`s.
+
+I trie the latter approach first. (Perhaps the logic was, if this works, great; if not, we can fall back to the currently more time consuming approach of testing with more samples. Also the implementation "looks" correct...)
+
+First I tried prompting Claude to do the proofs with the help of LeanTool, but with very limited progress. Then I tried doing it manually. 
+I realized we may need to add a precondition of `beta > alpha` to `alphabeta` to make the proofs go through. I added it and that allowed me to prove the first few `sorry`s.
+But eventually I got stuck, and I soon realized the problem is with Claude's implementation. 
+It hallucinated. Can you see where?
+
+So, `pbtdp.py` did not catch this earlier because it ran too few samples. If we run it with more samples it should eventually catch this. Let's test this hypothesis. 
+I ran `pbtdp.py` with 200 samples on this code. It caught an error in 1 of the 200 samples!
+```
+{'total_tests': 200, 'passed': 199, 'unknown': 0, 'failed': 1, 'failures': [{'inputs': {'g': '(GameTree.node\n  [GameTree.terminal (-1) (by decide) (by decide), GameTree.node [GameTree.terminal 1 (by decide) (by decide), GameTree.terminal 3 (by decide) (by decide)], GameTree.node []])'}, 'output': 'failed check: alpha ≥ minimax (GameTree.node (child :: tail))\nfailed check: 1 = 100\nfalse'}]}
+```
+The output identifies the input that produced the failed check, and which check it failed on. 
+Future improvement: assign each check a unique integer ID, that is printed in the error message, so that it can be more easily located. 
+
+Looking back, the fact that Claude inferred the wrong goals for 2 out of the 12 `sorry`s
+should have been a tell that things have gone wrong. 
+If Claude hallucinated the goals, then it likely hallucinated in the implementations as well. 
+After fixing the checks to match the correct goals produced by LeanTool,
+these checks are designed to immediately catch the hallucinations using `pbtdp.py`.
+It just took us a while because we needed to produce enough samples to provide sufficient coverage of all the branches.
+
+
 ## Takeaways
 
 - We now have a working prototype of our framework that supports property-based testing with depedent types, consisting of `pbtdp.py`, LeanTool, and Claude Code. Claude Code could be replaced by another coding assistant to provide the feedback loop, e.g. Goose, Aider, or Cursor. This in turn will allow us to try other LLMs.
 Feel free to play with [LeanTool's branch containing `pbtdp.py`](https://github.com/GasStationManager/LeanTool/tree/feature-plugin-pbt), perhaps try coding your favorite algorithm!
 - A key drawback of our `pbtdp.py` is its slow speed: it is currently not able to generate enough samples to cover all branches while still enabling interactive coding.
 I think the culprit may lie in the auto-generated implementation for the `Repr` type class, and we may need a custom one for our user-defined types like GameTree.
-- I'm pretty new to Claude Code, and I like it so far. Pretty versatile to allow the use of custom tools like `pbtdp.py`. We also did a bit of pair programming to hammer out some kinks in the framework.
+- I'm pretty new to Claude Code the coding assistant, and I like it so far. Pretty versatile to allow the use of custom tools like `pbtdp.py`. We also did a bit of pair programming to hammer out some kinks in the framework.
 - How did Claude Sonnet 3.7 do in its implementation  of `alphabeta`? Overall it is very capable, but at times over-eager to write the code and less able to follow precisly the instructions. (Which aligns with its general reputation.)
 In particular it just wrote the checks without consulting the results of LeanTool's load_sorry,
 and had to be prompted to actually run LeanTool and fix the inconsistencies. 
 - Next we will try some other models, perhaps ones that are less confident about its knowledge of alphabeta and more likely to follow the workflow.
-- Now that we are (somewhat) confident that Claude's implementation is correct, can we prove the remaining `sorry`s? I tried prompting Claude to do so with the help of LeanTool, but with very limited progress. Looking at the code, we may need to add a precondition of `beta > alpha` to make the proofs go through...
