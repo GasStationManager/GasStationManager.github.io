@@ -293,4 +293,8 @@ I think the culprit may lie in the auto-generated implementation for the `Repr` 
 - How did Claude Sonnet 3.7 do in its implementation  of `alphabeta`? Overall it is very capable, but at times over-eager to write the code and less able to follow precisly the instructions. (Which aligns with its general reputation.)
 In particular it just wrote the checks without consulting the results of LeanTool's load_sorry,
 and had to be prompted to actually run LeanTool and fix the inconsistencies. 
+And it hallucinated in its implementation.
+- Overall this was a partial success. Our framework detected the hallucination, but so could a direct application of PBT like in our WakingUp experiment. 
+The advantage of our framework would be in locating the bug, and thereby facilitating the LLMs fixing the bug. 
+A couple of things to improve on: labelling the checks with unique IDs, and better prompting of the LLMs to grow the algorithm incrementally.
 - Next we will try some other models, and other coding tasks. Suggestions welcome!
