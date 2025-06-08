@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Proving Alpha-Beta"
+title:  "Proving Alpha-Beta, Episode 1"
 date:   2025-06-08 07:30:00 +0000
 categories: AI
 ---
@@ -31,7 +31,10 @@ In our [last installment](https://gasstationmanager.github.io/ai/2025/05/22/alph
 Part of the issue was that decisions made earlier on during the implementation made it harder to finish the proof.
 
 In this post, I am going to explore a natural extension of the direction of our framework:
-interleave proving with implementation. In particular, once we have done the implementation of a branch of our code, and through testing of the checks guarding the `sorry`, convinced that this part of the implementation is likely correct, we can go ahead and try to fill the `sorry` with a proof of the subgoal. A couple of reasons that this will help producing a proof of correctness:
+interleave proving with implementation. In particular, once we have done the implementation of a branch of our code, and through testing of the checks guarding the `sorry`, convinced that this part of the implementation is likely correct, we can go ahead and try to fill the `sorry` with a proof of the subgoal. 
+I am calling this *Code-Test-Prove*, as a homage to [Draft-Sketch-Prove](https://arxiv.org/abs/2210.12283),
+which has been a big influence.
+A couple of reasons that this will help producing a proof of correctness:
 - *Fresh on the mind:* The proof goal is already close to the implementation in terms of distance in the source code. Now they are also close temporally: the proving happens immediately after the implementation and its testing, so that the relevant information is fresh in the recent context.
 This can be better than proving after the fact, when some of the reasoning context behind the implementation may be lost or hard to find.
 - *Feedback from the proof attempt:* If the proof attempt fails, perhaps that can
@@ -68,6 +71,8 @@ to be better compared to the reasoning models at following detailed instructions
 Our starter code and initial prompt is the same as in the [previous episode](https://gasstationmanager.github.io/ai/2025/05/22/alphabeta-goose.html) with Gemini + Goose.
 Main difference is that now I'm suggesting the model to attempt to prove the `sorry`
 right after the implementation of that branch is done and PBT (witht the `run_tests` tool) passed.
+
+![Screenshot of our framework running in Cursor](/images/cursor_pbt.png)
 
 
 How did GPT 4.1 do?
