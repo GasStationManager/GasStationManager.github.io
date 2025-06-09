@@ -377,7 +377,7 @@ Some ideas that can help improve this situation:
 Instructions can be put in the system message, or `CLAUDE.md` in the case of Claude Code.
 Sometimes this skill *comes with experience*, which in the case of LLMs means reinforcement learning.
 - Letting the LLM search for a proof in a systematic way, as a tree search. REPL interfaces like Pantograph and Lean-Interact can help facilitate this.
-- Search engines that suggest relevant theorems from libraries. There is LeanSearchClient which connects to sevearl search engines. There is also the recent [LeanExplore](https://www.leanexplore.com/), which is also available as an MCP server. 
+- Search engines that suggest relevant theorems from libraries. There is LeanSearchClient which connects to several search engines. There is also the recent [LeanExplore](https://www.leanexplore.com/), which is also available as an MCP server. 
 - Make it easy to pass a `sorry` to a specialized prover model, or a hammer tactic.
 Lean doesn't yet have an official hammer tactic, but it is getting there, with several 
 automated theorem proving tools, including aesop, duper, etc.
