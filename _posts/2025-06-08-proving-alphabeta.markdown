@@ -364,7 +364,7 @@ by  e.g. using `if (h: cond) ... else ...` instead of `if cond ... else ...`.
 
 When the models fail at their first proof attempts, 
 they tend to just throw additional random proof attempts at it, and hoping one sticks.
-sometimes there is attempt to ajust the approach given the error message feedbacks from Lean, but with somewhat limited effectiveness. 
+sometimes there is attempt to adjust the approach given the error message feedbacks from Lean, but with somewhat limited effectiveness. 
 I had to explicitly tell the models to try `simp[minimax]; omega`, and 
 for GPT 4.1 / o3, they eventually listened, and was able to use the same line on the other proof goals.
 GPT 4.1 / o3 weren't necessarily better at proving than Sonnet 3.7 or Gemini;
