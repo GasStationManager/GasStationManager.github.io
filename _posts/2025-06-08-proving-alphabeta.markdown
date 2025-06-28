@@ -282,7 +282,7 @@ Now, Lean was still not allowing the change from `partial def` to `def` without 
 My working theory was that the additional complexity of all the run-time checks, especially the throwing of exceptions, may have confused Lean's reasoning about the termination of `alphabeta`.
 
 - Now that all `sorry`s have been filled, it is safe to remove all of the run-time checks.
-That was what I told o3 to do. After the checks and the rasing of exceptions are removed, 
+That was what I told o3 to do. After the checks and the raising of exceptions are removed, 
 we were able to change the `partial def` to `def` without errors.
 To tidy things further, I asked o3 to change `alphabeta` back to a pure function by removing the reference to the IO monad (and removing the `do` and `return`s.)
 Here is the final result.
