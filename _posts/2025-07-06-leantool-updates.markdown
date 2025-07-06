@@ -13,6 +13,11 @@ categories: AI
 This post is a progress report on a few different topics, all revolving around [LeanTool](https://github.com/GasStationManager/LeanTool)'s functionalities.
 
 
+* Do not remove this line (it will not be displayed)
+{:toc}
+
+
+
 ## Proving Alpha-Beta, Episode 2: Claude Code Revisited
 
 A quick recap: in the last few posts, we have been developing a workflow for AI coding, that aims to 
