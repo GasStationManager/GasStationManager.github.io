@@ -39,17 +39,24 @@ The set up:
 
 Let's start the session!
 - Same starter code and initial prompts as previous episodes.
+
 - Claude Code's default model is Sonnet 4; the user can switch to the more expensive Opus 4.
+
 - Ever since the time [Sonnet 3.7 tried to output a complete implementation in one go](https://gasstationmanager.github.io/ai/2025/05/15/alphabeta-claude.html), I have tried to make the models go slow initially; making sure they are able to use the tools, and to follow the workflow: start with a stub implementation, run LeanTool to check syntax and extract goals, make sure the run-time checks matches the goals, then test by running `pbtdp.py`.
+
 - Sonnet 4 was eager to start coding, but after some prompting was able to get a good grasp of the tools and the workflow.
+
 - Sonnet does not know when to switch to proving mode. I ended up asking it to start trying to prove the `sorry`s at "random" points in the session, but it was not very systematic. 
+
 - So what should be the right timing to switch to proving? This is actually non-obvious:
 at any point in the middle of the workflow, after `pbtdp.py` finished running, we will have:
 some branches of the implementation failing the tests, and some branches of the implementation passing the tests. Should we start trying to prove a sorry associated with the branch that passed the tests, or try to fix the branch that is failing the tests?
+
 - I think the following is the answer that makes most sense, and aligned with the intention of the workflow:
 if a branch's implementation is intentionally a stub implementation, we know it will fail the tests; we will need to fix this branch but not necessarily right away. 
 If besides these stub failures, all other tests pass: this likely happens right after we finished implementing (or fixing) a branch, and it is passing the tests. This is when we can switch to attempting a proof for the branch.
 On the other hand, if there are other test failures besides the stubs, this is when the tests have discovered a bug in an attempted implementation of a branch, and we should focus on fixing that branch right away.  
+
 - And that is in the ideal situation when the tests always detect a bug. In reality,
 `pbtdp.py` was only able to run about 25 to 30 samples before it hits Claude Code's 2-minute timeout limit.
 We could run `pbtdp.py` multiple times, and Claude does that sometimes.
@@ -62,9 +69,11 @@ Opus made some very nice progress (more on that below), but I was very soon hitt
 
 - Opus 4 seems to have stronger reasoning abilities, which allowed it to make more progress on proving the `sorry`s than Sonnet did. The most impressive thing I saw Opus did though, is it actually was able to **detect a bug in the implementation via its proof attempt**. 
 This was one of the things I wished for when I proposed [Code-Test-Prove](https://gasstationmanager.github.io/ai/2025/06/08/proving-alphabeta.html), but I wrote at the time that I thought it would require a model that is a very strong Lean prover to be able to get much useful information out of a failed Lean proof attempt. And that I thought such a model is not here yet.
+
 - Here's how Opus did it. Recall that the main challenge with trying to detect bugs via failed proof attempt, is that when a proof attempt fails, how do we know whether it is due to our lack of Lean proving ability, or due to a bug in the implementation?
 Opus, when it failed at proving a `sorry`, switched back to *informal, proof-sketch level reasoning.* It can get the goal statement and the premises corresponding to the `sorry` from calling LeanTool. It then tries to formulate an informal proof sketch. As long as it believes that the proof sketch works, it is worth keep trying to formalize the argument into Lean, possibly involving multiple rounds of calling LeanTool and iteratively fixing the proof attempt. 
 On the other hand, if it senses that the proof sketch doesn't work, it will investigate the possibility that the implementation is wrong. 
+
 - How generalizable is this method? It requires the model to be at least decent in Lean to be able to make progress, but also a very strong informal reasoner. 
 I think this is very much within reach of the current state-of-the-art reasoning models, like Gemini-2.5-Pro, or o3 strapped with another agent that does the coding and tool-calling (I should try this with Aider architect mode someday). 
 As we get models with stronger and stronger Lean proving ability, they will be able to get more information out of the failed attempt to feed into the subsequent informal reasoning, 
@@ -209,7 +218,7 @@ That has changed lately with the recent release of [LeanHammer](https://github.c
 To help facilitate the use of hammers by LLMs, I have added the following (very experimental) "Sorry Hammer" feature to LeanTool: if the LLM passes a Lean source code with `sorry`s to the tool, and choose to activate the `sorry_hammer` option of the tool call, then the tool will try to replace the first `sorry` with a hammer tactic. By default it is `hammer` from LeanHammer, but this is configurable, and can even be a list of tactics to try one by one (the list is converted to `first | tac_1 | tac_2 | ..`).
 
 (Alternatively, you could directly prompt the LLM to use the `hammer` tactic. And that is fine too.
-I think the sorry_hammer can be a useful way to explore different configurations and combinations of tactics; and also potential further automations, see below.)
+I think `sorry_hammer` can be a useful way to explore different configurations and combinations of tactics; and also potential further automations, see below.)
 
 LeanTool allows the LLM to iteratively refine its proof attempt: if the hammer fails, it can go back to the drawing board and try replacing the sorry with a more fine-grained proof sketch. (Right now you might need to prompt the LLMs; but if you find a prompt that works well, let me know and I can add it to the system prompt!)
 
@@ -249,7 +258,7 @@ and configured it to connect to the [LeanTool](https://github.com/GasStationMana
 
 A note on the set up. I have been serving LeanTool MCP from a Linux machine, 
 while my Claude Desktop was running in Windows and does not support remote MCP servers. 
-What to do? It turns out we can use tools like Supergateway to serve as proxies to translate remote MCP to local `stdio` ones and vice versa. My Claude Desktop config file ended up looking like
+What to do? It turns out we can use tools like [Supergateway](https://github.com/supercorp-ai/supergateway) to serve as proxies to translate remote MCP to local `stdio` ones and vice versa. My Claude Desktop config file ended up looking like
 ```
 {
     "mcpServers": {
