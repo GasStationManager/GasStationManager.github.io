@@ -5,7 +5,7 @@ date:   2025-07-29 07:30:00 +0000
 categories: AI
 ---
 
-## http://ProvablyCorrectVibeCoding.com
+## [http://ProvablyCorrectVibeCoding.com](http://ProvablyCorrectVibeCoding.com)
 
 
 This demo app is a frontend to [LeanTool](https://github.com/GasStationManager/LeanTool) and [SafeVerify](https://github.com/GasStationManager/SafeVerify). In more detail:
