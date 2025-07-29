@@ -16,3 +16,11 @@ This demo app is a frontend to [LeanTool](https://github.com/GasStationManager/L
 This demo is a proof-of-concept of a [vision](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html) that I have been building towards via my [open-source projects](https://github.com/GasStationManager/): a future with safe, hallucination-free coding AIs. We are of course quite a bit of distance from that goal, but hopefully this gives an idea of what that might look like. 
 
 
+
+## Next Steps
+
+Contributions / collaborations welcome! Some ideas for improvements:
+- Integration with [LeanExplore](https://www.leanexplore.com/)'s MCP server
+- Streaming output
+- As mentioned above, autoformalization of problem descriptions using the [FormalizeWithTest](https://github.com/GasStationManager/FormalizeWithTest) approach
+- Right now the app is using the simple feedback loop provided by LeanTool. Could instead use another "agentic" coding assistant like Claude Code, Gemini CLI or Goose, armed with LeanTool MCP for the Lean interaction.  
