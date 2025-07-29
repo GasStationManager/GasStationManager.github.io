@@ -1,0 +1,18 @@
+---
+layout: post
+title:  "Provably-Correct Vibe Coding"
+date:   2025-07-29 07:30:00 +0000
+categories: AI
+---
+
+## http://ProvablyCorrectVibeCoding.com
+
+
+This demo app is a frontend to [LeanTool](https://github.com/GasStationManager/LeanTool) and [SafeVerify](https://github.com/GasStationManager/SafeVerify). In more detail:
+-  The user creates a formal specification for a Lean coding task. Or take an existing problem from [Code with Proofs: the Arena](http://www.codeproofarena.com:8000/). (Upcoming feature: autoformalize from natural language problem description and a test set)
+- An AI agent attempts to output code with proof of correctness. The AI is an LLM (e.g. Sonnet/o3/Deepseek/Gemini/Grok4) with user-provided API key, armed with [LeanTool](https://github.com/GasStationManager/LeanTool). LeanTool provides not only ability to iteratively fix syntax errors, it also facilitates hallucination detection via property-based testing.
+- The solution is checked against the specification using [SafeVerify](https://github.com/GasStationManager/SafeVerify). If the solution passes, the user now has an implementation of the coding task that is guaranteed to satisfy the specification.
+
+This demo is a proof-of-concept of a [vision](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html) that I have been building towards via my [open-source projects](https://github.com/GasStationManager/): a future with safe, hallucination-free coding AIs. We are of course quite a bit of distance from that goal, but hopefully this gives an idea of what that might look like. 
+
+
