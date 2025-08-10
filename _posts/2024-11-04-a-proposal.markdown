@@ -4,8 +4,11 @@ title:  "A Proposal for Safe and Hallucination-free Coding AI"
 date:   2024-11-04 07:30:00 +0000
 categories: AI
 ---
+
+**Update 7/29:** [Provably-Correct Vibe Coding](http://provablycorrectvibecoding.com) initial release; announcement post [here](https://gasstationmanager.github.io/ai/2025/07/29/pcvc.html).
+
 **Update 3/28:** Fourth [progress report](https://gasstationmanager.github.io/ai/2025/03/28/alphabeta.html), on property-based testing with dependent types.
-**5/15:** [Follow-up report](https://gasstationmanager.github.io/ai/2025/05/15/alphabeta-claude.html).
+**5/15:** [Follow-up report #4.1](https://gasstationmanager.github.io/ai/2025/05/15/alphabeta-claude.html). **5/22:** [#4.2](https://gasstationmanager.github.io/ai/2025/05/22/alphabeta-goose.html). **6/8:** [#4.3](https://gasstationmanager.github.io/ai/2025/06/08/proving-alphabeta.html). **7/6:** [#4.4](https://gasstationmanager.github.io/ai/2025/07/06/leantool-updates.html).
 
 **Update 1/30:** [A reading guide](https://gasstationmanager.github.io/ai/2025/01/30/lean4ai.html).
 
