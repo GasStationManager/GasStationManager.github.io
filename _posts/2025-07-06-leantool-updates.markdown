@@ -5,7 +5,7 @@ date:   2025-07-06 07:30:00 +0000
 categories: AI
 ---
 
-(This is progress report #4.3 of [our journey](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html).)
+(This is progress report #4.4 of [our journey](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html).)
 
 
 ---
@@ -293,7 +293,7 @@ For each theorem/lemma, I prompted with the Lean theorem statement, and which le
 
 Overall they are able to effectively use multiple calls to LeanExplore's search tool and LeanTool's code interpreter to iteratively refine their proof attempts.
 
-Here is a [file](https://github.com/GasStationManager/LeanTool/blob/main/examples/pabc_claude.lean.txt) that contains the proofs so far. 
+Here is a [file](https://github.com/GasStationManager/LeanTool/blob/main/examples/pabc_claude.lean) that contains the proofs so far. 
 One example: here is the first lemma.
 ```
 import Mathlib
