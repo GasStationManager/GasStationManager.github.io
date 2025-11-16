@@ -47,7 +47,7 @@ The resulting formal proof is verified by the Lean proof checker, and any output
 Our strategy here is going to be heavily informed by the non-rigorous and rigorous informal phases. Another mode is the *autoformalization* task: we are given a rogorous math proof from a paper or textbook, and need to turn it into a Lean proof.
 
 - **Formal reasoning as search.** 
-A proof task is cast as a search problem. E.g. in tactic mode, the states are goal states, actions are possible tactics, and our task is to find a sequence of tactics that transforms from the initial goal state a successful terminal state where no unproved goal remain.
+A proof task is cast as a search problem. E.g. in tactic mode, the states are goal states, actions are possible tactics, and our task is to find a sequence of tactics that transforms from the initial goal state to a successful terminal state where no unproved goal remain.
 Examples include AlphaProof, and similar approaches. These are often specialized transformers trained via RL; perhaps a system-1 neural networks combined with a system-2 search like MCTS.
 This is also where automated theorem proving (ATP) tools can be applicable, stuff that we sometimes don't think of as AI, including SAT and SMT solvers, linear and integer programming, and hammer tactics that package them together.
 
