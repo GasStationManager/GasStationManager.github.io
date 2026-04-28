@@ -25,3 +25,5 @@ As mentioned in my [previous post](https://gasstationmanager.github.io/ai/2025/1
 I realize that it is wildly optimistic to attempt this as a non-ML-theorist. But look at what's already been formalized in this repo. This is already going beyond my knowledge of ML theory. But it becomes more feasible with the help of Codex and Claude Code.
 
 As usual, comments, suggestions, contributions are appreciated!
+
+## VibeRegistry
