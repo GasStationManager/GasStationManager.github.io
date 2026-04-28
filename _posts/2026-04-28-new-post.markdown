@@ -23,3 +23,5 @@ The sister repo to [ArtificialAlgorithms](https://github.com/GasStationManager/A
 As mentioned in my [previous post](https://gasstationmanager.github.io/ai/2025/10/23/artificial-alg.html), I am interested in formalizations of foundations of AI/ML, for similar motivations as my interest in [verified code generation](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html). In the near future, when our AI writes a paper on AI/ML research, I want to be able to ask it to formalize the theorems in Lean.
 
 I realize that it is wildly optimistic to attempt this as a non-ML-theorist. But look at what's already been formalized in this repo. This is already going beyond my knowledge of ML theory. But it becomes more feasible with the help of Codex and Claude Code.
+
+As usual, comments, suggestions, contributions are appreciated!
