@@ -11,3 +11,5 @@ I am not a natural writer, and feel more natural as a researcher and builder. Re
 One update: I have recently joined Axiom. We built a prover that solved 12 out of 12 problems in the Putnam math competition, formalizing each proof in Lean. As a non-mathematician, it was cool witnessing our prover doing stuff far beyond my math and Lean abilities. We will continue to do awesome stuff, including in AI-assisted formal verification and verified code generation.
 
 Meanwhile, I would like to mention a couple of recent projects.
+
+## ArtificialTheorems
