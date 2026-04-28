@@ -8,4 +8,4 @@ categories: AI
 Dear readers, apologies for the infrequent updates.
 I am not a natural writer, and feel more natural as a researcher and builder. Recently, I have been busy building.
 
-One update: I have recently joined Axiom. We built a prover that solved 12 out of 12 problems in the Putnam math competition, formalizing each proof in Lean.
+One update: I have recently joined Axiom. We built a prover that solved 12 out of 12 problems in the Putnam math competition, formalizing each proof in Lean. As a non-mathematician, it was cool witnessing our prover doing stuff far beyond my math and Lean abilities.
