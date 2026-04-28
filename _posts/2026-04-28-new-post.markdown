@@ -39,3 +39,5 @@ Later, I decided to create [VibeRegistry](https://github.com/GasStationManager/V
 - a mechanism for human experts to sign off on the specs.
 
 I added a few entries and plan to add more. Besides pure proofs, I am also interested in vibe-coded software libraries with correctness proofs. Please feel free to send in suggestions as GitHub issues!
+
+With this, I am exploring a decentralized model of building libraries. As the registry expands, I plan to provide functionality to categorize, and to facilitate composition. Without a centrally enforced common set of definitions, this could potentially get messy. But perhaps our AIs will still figure it out.
