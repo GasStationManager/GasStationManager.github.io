@@ -13,3 +13,9 @@ One update: I have recently joined Axiom. We built a prover that solved 12 out o
 Meanwhile, I would like to mention a couple of recent projects.
 
 ## ArtificialTheorems
+
+The sister repo to [ArtificialAlgorithms](https://github.com/GasStationManager/ArtificialAlgorithms), ArtificialTheorems is a library of Lean 4 formalizations of theoretical foundations of AI and ML. Formalized results include:
+- convergence of stochastic gradient descent, including a formalization of the Robbins-Siegmund theorem from stochastic approximation theory.
+- Universal approximation theorem of neural networks.
+- Implicit regularization of gradient descent.
+- Theory of proper scoring rules.
