@@ -34,6 +34,6 @@ On the other hand, many of them are relatively new to Lean, and perhaps not all 
 
 In ArtificialTheorems, I have set up a template for robust verification: having a Specs directory containing just the theorem statements, then verifying the proofs against the specs using [SafeVerify](https://github.com/GasStationManager/SafeVerify) and [Comparator](https://github.com/leanprover/comparator). I have scripts that run these locally as well as in GitHub CI. I do recommend anyone that is doing an autoformalization project to adopt a verification framework like this.
 
-Later, I decided to create VibeRegistry, a registry of external autoformalization repos, that provides:
+Later, I decided to create [VibeRegistry](https://github.com/GasStationManager/VibeRegistry), a registry of external autoformalization repos, that provides:
 - safe verification using SafeVerify and Comparator, using the setup outlined above.
 - a mechanism for human experts to sign off on the specs.
