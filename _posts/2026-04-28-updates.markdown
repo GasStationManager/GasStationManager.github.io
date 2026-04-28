@@ -1,0 +1,43 @@
+---
+layout: post
+title:  "Updates: ArtificialTheorems, VibeRegistry"
+date:   2026-04-28 07:30:00 +0000
+categories: AI
+---
+
+Dear readers, apologies for the infrequent updates.
+I am not a natural writer, and feel more natural as a researcher and builder. Recently, I have been busy building.
+
+One update: I have recently joined [Axiom](https://axiommath.ai/). We built a prover that [solved 12 out of 12 problems in the Putnam math competition](https://axiommath.ai/territory/from-seeing-why-to-checking-everything), formalizing each proof in Lean. As a non-mathematician, it was cool witnessing our prover doing stuff far beyond my math and Lean abilities. We will continue to do awesome stuff, including in AI-assisted formal verification and verified code generation.
+
+Meanwhile, I would like to mention a couple of recent projects.
+
+## ArtificialTheorems
+
+The sister repo to [ArtificialAlgorithms](https://github.com/GasStationManager/ArtificialAlgorithms), [ArtificialTheorems](https://github.com/GasStationManager/ArtificialTheorems) is a library of Lean 4 formalizations of theoretical foundations of AI and ML. Formalized results include:
+- convergence of stochastic gradient descent, including a formalization of the Robbins-Siegmund theorem from stochastic approximation theory.
+- Universal approximation theorem of neural networks.
+- Implicit regularization of gradient descent.
+- Theory of proper scoring rules.
+
+As mentioned in my [previous post](https://gasstationmanager.github.io/ai/2025/10/23/artificial-alg.html), I am interested in formalizations of foundations of AI/ML, for similar motivations as my interest in [verified code generation](https://gasstationmanager.github.io/ai/2024/11/04/a-proposal.html). In the near future, when our AI writes a paper on AI/ML research, I want to be able to ask it to formalize the theorems in Lean.
+
+I realize that it is wildly optimistic to attempt this as a non-ML-theorist. But look at what's already been formalized in this repo. This is already going beyond my knowledge of ML theory. But it becomes more feasible with the help of Codex and Claude Code.
+
+As usual, comments, suggestions, contributions are appreciated!
+
+## VibeRegistry
+
+If I can do this as a non-expert, imagine what true domain experts can do. Indeed, with the recent release of Anthropic and OpenAI models that are great at Lean, together with coding harnesses like Claude Code and Codex, we are beginning to see more and more autoformalization efforts by mathematicians, physicists, computer science and machine learning theorists.
+
+On the other hand, many of them are relatively new to Lean, and perhaps not all are aware of the potential [pitfalls](https://gasstationmanager.github.io/ai/2024/11/19/progress1.html) of trusting an AI-produced Lean proof once it passed compilation.
+
+In ArtificialTheorems, I have set up a template for robust verification: having a Specs directory containing just the theorem statements, then verifying the proofs against the specs using [SafeVerify](https://github.com/GasStationManager/SafeVerify) and [Comparator](https://github.com/leanprover/comparator). I have scripts that run these locally as well as in GitHub CI. I recommend anyone doing an autoformalization project to adopt a verification framework like this.
+
+Later, I decided to create [VibeRegistry](https://github.com/GasStationManager/VibeRegistry), a registry of external autoformalization repos, that provides:
+- safe verification using SafeVerify and Comparator, using the setup outlined above.
+- a mechanism for human experts to sign off on the specs.
+
+I added a few entries and plan to add more. Besides pure proofs, I am also interested in vibe-coded software libraries with correctness proofs. Please feel free to send in suggestions as GitHub issues!
+
+With this, I am exploring a decentralized model of building libraries. As the registry expands, I plan to provide functionality to categorize, and to facilitate composition. Without a centrally enforced common set of definitions, this could potentially get messy. But perhaps our AIs will still figure it out.
