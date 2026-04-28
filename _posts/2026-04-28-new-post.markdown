@@ -27,3 +27,5 @@ I realize that it is wildly optimistic to attempt this as a non-ML-theorist. But
 As usual, comments, suggestions, contributions are appreciated!
 
 ## VibeRegistry
+
+If I can do this as a non-expert, imagine what true domain experts can do. Indeed, with the recent release of Anthropic and OpenAI models that are great at Lean, together with coding harnesses like Claude Code and Codex, we are beginning to see more and more autoformalization efforts by mathematicians, physicists, computer science and machine learning theorists.
