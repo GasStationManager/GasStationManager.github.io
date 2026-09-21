@@ -41,3 +41,17 @@ Later, I decided to create [VibeRegistry](https://github.com/GasStationManager/V
 I added a few entries and plan to add more. Besides pure proofs, I am also interested in vibe-coded software libraries with correctness proofs. Please feel free to send in suggestions as GitHub issues!
 
 With this, I am exploring a decentralized model of building libraries. As the registry expands, I plan to provide functionality to categorize, and to facilitate composition. Without a centrally enforced common set of definitions, this could potentially get messy. But perhaps our AIs will still figure it out.
+
+## Addendum, September 2026: VibeRegistry updates
+
+A few months in, VibeRegistry has changed enough that the description above is out of date.
+
+**Comparator is now the primary check.** It rebuilds the proof in its own sandbox instead of trusting artifacts we produced, and it enforces the statement/proof separation against adversarial Lean. SafeVerify and lean4checker inspect artifacts our own build produced, so for the guarantee we publish they are redundant; both are now opt-in. Also opt-in is [nanoda](https://github.com/ammkrn/nanoda_lib), an independent Lean kernel in Rust — a second kernel is cheap insurance against a bug in the first.
+
+**Some of what I found was in my own pipeline.** Several entries were reporting a pass while nothing was actually being checked: a sandbox flag that quietly swallowed an argument, a theorem filter that treated declaration kinds it didn't recognize as "not a theorem" and dropped them, a version mismatch between the exporter and the checker. A run where the checker returns no verdict now fails instead of reporting green. Each verdict is also bound to a hash of the statement it verified, so editing a spec invalidates the old result rather than inheriting it. One entry now fails honestly, which I prefer to the alternative.
+
+This is the part I keep relearning: the safety of the whole code-with-proof idea is only as strong as the verification pipeline, and a verification pipeline that reports success without checking anything is worse than no pipeline at all, because people believe it.
+
+**Overlay and search.** The registry now mirrors records from [Palomar](https://palomar-registry.org/) and LeanPool — about 1800 statements alongside our own 30. Neither has a human sign-off layer, so ours sits on top of theirs, using the same sign-off interface as our own entries. Everything is browsable and searchable at [gasstationmanager.github.io/VibeRegistry](https://gasstationmanager.github.io/VibeRegistry/), with a sign-off link on each statement.
+
+On the worry I ended with above, about no centrally enforced set of definitions: a small step is that specs are now checked against Mathlib's declaration list, so an entry can't silently shadow a Mathlib name. That catches collisions, not disagreements. The harder problem is still open.
