@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Updates: ArtificialTheorems, VibeRegistry"
+title:  "Updates: ArtificialTheorems, VibeRegistry (Addendum 9/22/2026)"
 date:   2026-04-28 07:30:00 +0000
 categories: AI
 ---
