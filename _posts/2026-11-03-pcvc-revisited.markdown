@@ -34,3 +34,23 @@ def bump (k : Nat) : StateM Nat Nat := by
 ```
 
 There have been similar tactics that call out to LLMs, including [llmstep](https://github.com/wellecks/llmstep) and [Lean Copilot](https://github.com/lean-dojo/LeanCopilot) from the LeanDojo project. I think what is unique about this tactic is its focus on verified code generation: it requires both an implementation and a correctness proof.
+
+`vibe` will also help you check the validity of your spec, again by calling out to the LLM: before implementing, the agent checks whether the spec is vacuous (the preconditions never hold, or every implementation satisfies the postcondition) or unsatisfiable (no implementation can meet it). A defect is reported only with a certificate, a theorem stating the defect that Lean checks. For example, this spec cannot be met:
+
+```lean
+def between (lo hi : Nat) : {m : Nat // lo ≤ m ∧ m < hi ∧ hi ≤ lo + 0} := by
+  vibe
+```
+
+and `vibe` reports:
+
+```
+vibe: SPEC DEFECT (unsat): The postcondition requires lo ≤ m < hi and hi ≤ lo,
+which is contradictory for every input, e.g. lo = 0, hi = 0.
+Lean-checked certificate (check that it states the defect of THIS spec):
+theorem between_unsat : ¬ ∃ f : Nat → Nat → Nat, ∀ lo hi : Nat,
+    lo ≤ f lo hi ∧ f lo hi < hi ∧ hi ≤ lo + 0 := by
+  rintro ⟨f, h⟩
+  have := h 0 0
+  omega
+```
