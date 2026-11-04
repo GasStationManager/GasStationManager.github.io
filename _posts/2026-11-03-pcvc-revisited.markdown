@@ -54,3 +54,5 @@ theorem between_unsat : ¬ ∃ f : Nat → Nat → Nat, ∀ lo hi : Nat,
   have := h 0 0
   omega
 ```
+
+Feel free to adapt the LLM agent call to your own development workflow: the agent command is a setting (`set_option vibe.llm`), and its instructions are a plain prompt file in the repo. This is a natural site for inserting property-based testing and test-driven development, such as the [Code-Test-Prove]({% post_url 2025-06-08-proving-alphabeta %}) scheme I suggested earlier.
