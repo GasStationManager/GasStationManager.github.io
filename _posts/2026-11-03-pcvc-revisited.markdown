@@ -56,3 +56,5 @@ theorem between_unsat : ¬ ∃ f : Nat → Nat → Nat, ∀ lo hi : Nat,
 ```
 
 Feel free to adapt the LLM agent call to your own development workflow: the agent command is a setting (`set_option vibe.llm`), and its instructions are a plain prompt file in the repo. This is a natural site for inserting property-based testing and test-driven development, such as the [Code-Test-Prove]({% post_url 2025-06-08-proving-alphabeta %}) scheme I suggested earlier.
+
+Since `vibe` is a tactic, it lives in your editor through Lean's language server, with no separate app. By default it runs in the background: on a new spec, it starts the agent, leaves a `sorry` in place, and lets you keep working, and when the agent finishes, the result shows up in the editor on its own. You apply it from the `Try this` link in the infoview, or from the quick-fix lightbulb, which is plain LSP and so should work in any editor that runs Lean's language server. Either way, Lean re-checks the code once it is in your file. Results are cached, so re-elaborating does not call the model again, and once you accept a suggestion, `vibe` is gone from the file, so `lake build` and CI never call a model.
